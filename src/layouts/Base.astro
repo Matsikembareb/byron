@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { SITE, SITE_URL } from '../config.ts';
-import { PROFILE } from '../data.ts';
+import { PROFILE, HOME, EXPERIENCE } from '../data.ts';
 
 interface Props {
   /** Appended with the site name: "Title · Byron Matsikembare". */
@@ -37,6 +37,11 @@ const personId = `${SITE_URL.replace(/\/$/, '')}/#person`;
 
 // Site-wide Person + WebSite graph. A stable @id lets every other page on the
 // site (and the ProfilePage schema on /about) point at the same Person node.
+const currentJob = EXPERIENCE.find((r) => r.current);
+const offers = HOME.services.items
+  .filter((s) => !['Free sharing', 'Partnerships'].includes(s.h))
+  .map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.h, description: s.body } }));
+
 // Phone number deliberately excluded — see PROFILE.showPhone in data.ts.
 const siteSchema = {
   '@context': 'https://schema.org',
@@ -51,7 +56,8 @@ const siteSchema = {
       jobTitle: PROFILE.title,
       email: PROFILE.email,
       description:
-        'Python full-stack developer and Computer Science student at Harare Institute of Technology.',
+        'Python full-stack developer in Harare building websites, custom software and web apps with Flask and React. IT systems developer at Die Deutsche Schule Harare and Computer Science student at HIT.',
+      ...(currentJob ? { worksFor: { '@type': 'Organization', name: currentJob.org } } : {}),
       address: { '@type': 'PostalAddress', addressLocality: 'Harare', addressCountry: 'ZW' },
       affiliation: { '@type': 'CollegeOrUniversity', name: 'Harare Institute of Technology' },
       alumniOf: [
@@ -60,7 +66,10 @@ const siteSchema = {
       ],
       knowsAbout: [
         'Python', 'Flask', 'Django', 'FastAPI', 'React', 'MySQL', 'PostgreSQL', 'MongoDB',
+        'Web development', 'Custom software development',
       ],
+      // The homepage services, as offers. "Free sharing" and "Partnerships" aren't services, so they're left out.
+      makesOffer: offers,
       knowsLanguage: ['sn', 'en'],
       sameAs: [PROFILE.social.github, PROFILE.social.linkedin].filter(Boolean),
     },
@@ -89,6 +98,7 @@ const siteSchema = {
 
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1d1e21" media="(prefers-color-scheme: dark)" />
 
