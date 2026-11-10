@@ -8,6 +8,9 @@ import { SITE_URL } from './src/config.ts';
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
+  // One address per page: /about, never /about/. Matches the canonical tags; vercel.json
+  // redirects the slashed form so Google doesn't see two copies of each page.
+  trailingSlash: 'never',
   // /skills and /education are folded into /qualifications by the content kit.
   redirects: {
     '/skills': '/qualifications',
