@@ -1,0 +1,222 @@
+---
+import Icon from './Icon.astro';
+import { NAV_ITEMS } from '../data.ts';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const isHome = path === '/';
+---
+
+<header id="site-nav" class="nav-glass sticky top-0 z-50 border-b border-transparent transition-colors">
+  <nav class="wrap flex items-center justify-between h-[76px] lg:h-[107px]" aria-label="Main">
+    <!-- Off the homepage, the name rolls over to "← home" on hover and on a scroll up, as a hint that it's the way back. -->
+    <a href="/" class="brand flex items-center gap-2 text-ink" aria-label="byron. Home" data-home-hint={isHome ? undefined : ''}>
+      <Icon name="layers" size={22} class="brand-icon" />
+      <span class="roll text-[22px] leading-none font-semibold tracking-tight">
+        <span class="roll-a">byron<span class="text-accent">.</span></span>
+        {!isHome && (
+          <span class="roll-b" aria-hidden="true"><Icon name="arrow-right" size={18} class="rotate-180 text-accent" />home</span>
+        )}
+      </span>
+    </a>
+
+    <div class="flex items-center gap-3 md:gap-10">
+      <ul class="hidden md:flex items-center gap-10">
+        {NAV_ITEMS.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={['text-[15px] font-normal transition-colors hover:text-ink', isActive(item.href) ? 'text-ink' : 'text-muted']}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <button
+        type="button"
+        class="theme-toggle grid place-items-center w-10 h-10 rounded-full border border-line text-ink hover:border-ink transition-colors"
+        aria-label="Switch to dark theme"
+        aria-pressed="false"
+      >
+        <Icon name="moon" size={18} class="i-moon" />
+        <Icon name="sun" size={18} class="i-sun" />
+      </button>
+
+      <a href="/contact" class="btn btn-primary hidden md:inline-flex">Hire me</a>
+
+      <button
+        id="nav-toggle"
+        type="button"
+        class="md:hidden grid place-items-center w-10 h-10 text-ink"
+        aria-label="Open menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <Icon name="menu" size={22} class="i-open" />
+        <Icon name="x" size={22} class="i-close hidden" />
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" class="md:hidden hidden border-t border-line bg-bg">
+    <ul class="wrap py-4 flex flex-col">
+      {NAV_ITEMS.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class:list={['block py-3 text-[17px] border-b border-line', isActive(item.href) ? 'text-ink' : 'text-muted']}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+      <li class="pt-5 pb-2"><a href="/contact" class="btn btn-primary w-full justify-center">Hire me</a></li>
+    </ul>
+  </div>
+</header>
+
+<style>
+  /* Toggle shows the theme you'd switch TO: moon in light, sun in dark. */
+  .theme-toggle :global(.i-sun) { display: none; }
+  :global([data-theme='dark']) .theme-toggle :global(.i-sun) { display: block; }
+  :global([data-theme='dark']) .theme-toggle :global(.i-moon) { display: none; }
+  /* Without JavaScript the toggle can't work, so don't show it. */
+  :global(html:not(.js)) .theme-toggle { display: none; }
+  #site-nav.is-scrolled { border-bottom-color: var(--border); }
+
+  /* Frosted glass: text scrolling underneath blurs into a soft wash instead of
+     showing through. Without backdrop-filter support the bar stays solid. */
+  .nav-glass { background-color: var(--bg); }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav-glass {
+      background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      backdrop-filter: blur(24px) saturate(170%);
+    }
+  }
+
+  /* ─── Name → "home" roll ───────────────────────────────────────────────
+     Both labels share one grid cell; the cell clips them, so one slides out
+     the top as the other slides in from below, like a departures board. */
+  .roll { display: inline-grid; overflow: hidden; padding-block: .2em; margin-block: -.2em; }
+  .roll > * { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 4px; }
+  .roll-b { transform: translateY(135%); opacity: 0; }
+
+  [data-home-hint] .roll > * { transition: transform .45s cubic-bezier(.2, .8, .2, 1), opacity .3s ease; }
+  [data-home-hint]:hover .roll-a,
+  [data-home-hint]:focus-visible .roll-a { transform: translateY(-135%); }
+  [data-home-hint]:hover .roll-b,
+  [data-home-hint]:focus-visible .roll-b { transform: none; opacity: 1; }
+
+  /* The scroll-up hint: in, hold, out. Plays to the end whatever the scroll does. */
+  [data-home-hint].is-hinting .roll-a { animation: roll-a 2.2s cubic-bezier(.2, .8, .2, 1) both; }
+  [data-home-hint].is-hinting .roll-b { animation: roll-b 2.2s cubic-bezier(.2, .8, .2, 1) both; }
+  [data-home-hint].is-hinting :global(.brand-icon) { animation: nudge 2.2s ease both; }
+  @keyframes roll-a {
+    0%          { transform: none; }
+    16%, 72%    { transform: translateY(-135%); }
+    72.01%      { transform: translateY(135%); }
+    92%, 100%   { transform: none; }
+  }
+  @keyframes roll-b {
+    0%          { transform: translateY(135%); opacity: 0; }
+    16%, 72%    { transform: none; opacity: 1; }
+    92%, 100%   { transform: translateY(-135%); opacity: 0; }
+  }
+  @keyframes nudge {
+    0%, 100%    { transform: none; }
+    10%         { transform: translateX(-3px); }
+    18%         { transform: none; }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const sync = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    toggle?.setAttribute('aria-pressed', String(dark));
+    toggle?.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+  sync();
+  toggle?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch {}
+    sync();
+  });
+  // Follow the system setting until the visitor makes a choice.
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    let stored: string | null = null;
+    try { stored = localStorage.getItem('theme'); } catch {}
+    if (!stored) { root.setAttribute('data-theme', e.matches ? 'dark' : 'light'); sync(); }
+  });
+
+  const nav = document.getElementById('site-nav');
+  const onScroll = () => nav?.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // "← home" hint, off the homepage only. A scroll up of 48px plays it once.
+  // While it plays, scrolling is ignored entirely. Afterwards it re-arms only
+  // after a fresh 48px scroll down, so one long scroll up doesn't loop it.
+  const brand = document.querySelector<HTMLElement>('[data-home-hint]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (brand) {
+    const TRAVEL = 48;
+    const maxY = () => document.documentElement.scrollHeight - window.innerHeight;
+    // Clamped so iOS rubber-banding at either end doesn't count as a scroll.
+    const posY = () => Math.min(Math.max(window.scrollY, 0), maxY());
+    let lastY = posY();
+    let up = 0;
+    let down = 0;
+    let armed = true;
+    let running = false;
+    let fallback = 0;
+
+    const finish = () => {
+      if (!running) return;
+      brand.classList.remove('is-hinting');
+      running = false;
+      up = 0;
+      down = 0;
+      window.clearTimeout(fallback);
+    };
+    brand.querySelector('.roll-b')?.addEventListener('animationend', finish);
+
+    window.addEventListener('scroll', () => {
+      const y = posY();
+      const dy = y - lastY;
+      lastY = y;
+      if (running) return;
+      if (dy < 0) { up -= dy; down = 0; }
+      else if (dy > 0) { down += dy; up = 0; }
+      if (down >= TRAVEL) armed = true;
+      if (!armed || running || up < TRAVEL || reduceMotion.matches || brand.matches(':hover')) return;
+      armed = false;
+      running = true;
+      brand.classList.add('is-hinting');
+      fallback = window.setTimeout(finish, 2600); // in case animationend never fires
+    }, { passive: true });
+  }
+
+  const btn = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    btn.querySelector('.i-open')?.classList.toggle('hidden', open);
+    btn.querySelector('.i-close')?.classList.toggle('hidden', !open);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.classList.contains('hidden')) {
+      (btn as HTMLButtonElement | null)?.click();
+      (btn as HTMLButtonElement | null)?.focus();
+    }
+  });
+</script>

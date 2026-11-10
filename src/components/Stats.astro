@@ -1,0 +1,44 @@
+---
+// Stats band on a surface background. Numbers count up when scrolled into view;
+// the final values are in the HTML, so no-JS and reduced-motion visitors see them as-is.
+import { PROOF } from '../data.ts';
+---
+
+<section class="bg-surface" aria-label="At a glance">
+  <div class="wrap py-16 lg:py-24">
+    <dl class="grid grid-cols-2 gap-y-12 md:flex md:justify-between">
+      {PROOF.map((s) => (
+        <div class="text-center">
+          <dt class="sr-only">{s.v}</dt>
+          <dd>
+            <span class="block text-[40px] md:text-[48px] leading-none font-normal text-ink tabular-nums" data-count={s.k}>{s.k}</span>
+            <span class="block mt-3 text-[15px] text-muted" aria-hidden="true">{s.v}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<script>
+  const nums = document.querySelectorAll<HTMLElement>('[data-count]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window && nums.length) {
+    const run = (el: HTMLElement) => {
+      const end = Number(el.dataset.count);
+      if (!Number.isFinite(end) || end <= 1) return;
+      const t0 = performance.now(), dur = 900;
+      const tick = (t: number) => {
+        const k = Math.min(1, (t - t0) / dur);
+        el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3))));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      el.textContent = '0';
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
+    }, { threshold: 0.6 });
+    nums.forEach((n) => io.observe(n));
+  }
+</script>

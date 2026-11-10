@@ -1,0 +1,17 @@
+---
+// Page header for inner pages: eyebrow + 44px H1 + optional intro, left-aligned like the design's section heads.
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}
+const { eyebrow, title, subtitle } = Astro.props;
+---
+
+<header class="wrap pt-12 lg:pt-20 pb-12 lg:pb-16">
+  <div class="max-w-[820px]">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1 class="h-section mt-4">{title}</h1>
+    {subtitle && <p class="mt-5 text-[17px] md:text-[18px] leading-[1.7] text-muted max-w-[720px]">{subtitle}</p>}
+  </div>
+</header>
