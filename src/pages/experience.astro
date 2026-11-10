@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { EXPERIENCE, LEADERSHIP } from '../data.ts';
+---
+
+<Base
+  metaTitle="Experience – Byron Matsikembare, Python Developer"
+  description="IT systems developer at Die Deutsche Schule Harare, after internships at Powervision and Muzukuru Streaming, plus youth leadership roles in Harare."
+>
+  <PageHeader
+    eyebrow="Experience"
+    title="Experience: internships, projects and leadership"
+    subtitle="A production system I build and run, two developer internships, and ongoing leadership in student health and welfare."
+  />
+
+  <section class="wrap pb-16 lg:pb-24" aria-labelledby="work-h">
+    <h2 id="work-h" class="sr-only">Work</h2>
+    <ol class="border-t border-line">
+      {EXPERIENCE.map((role) => (
+        <li class="grid md:grid-cols-[220px_1fr] gap-x-10 gap-y-3 py-10 border-b border-line">
+          <p class="text-[15px] text-muted">
+            {role.period}
+            {role.current && <span class="ml-2 inline-flex items-center gap-1.5 text-[13px] text-ink"><span class="w-1.5 h-1.5 rounded-full bg-[var(--ok)]" aria-hidden="true"></span>Current</span>}
+          </p>
+          <div>
+            <h3 class="text-[22px] md:text-[24px] font-normal text-ink">{role.title}</h3>
+            <p class="mt-1 text-[15px] text-muted">{role.org}</p>
+            {role.bullets.length > 0 && (
+              <ul class="mt-5 space-y-2.5 max-w-[760px]">
+                {role.bullets.map((b) => (
+                  <li class="relative pl-5 text-[16px] leading-[1.7] text-ink before:absolute before:left-0 before:top-[0.8em] before:w-2 before:h-px before:bg-[var(--muted)]">{b}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="wrap pb-20 lg:pb-32" aria-labelledby="lead-h">
+    <p class="eyebrow">Beyond code</p>
+    <h2 id="lead-h" class="h-section mt-4">Leadership and volunteering</h2>
+    <ul class="mt-10 border-t border-line">
+      {LEADERSHIP.map((l) => (
+        <li class="grid md:grid-cols-[220px_1fr_1.2fr] gap-x-10 gap-y-1 py-6 border-b border-line">
+          {l.period ? <p class="text-[15px] text-muted">{l.period}</p> : <p class="hidden md:block" aria-hidden="true"></p>}
+          <p class="text-[18px] text-ink">{l.role} <span class="text-muted">· {l.org}</span></p>
+          <p class="text-[15px] leading-[1.6] text-muted">{l.focus}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <CtaBand />
+</Base>

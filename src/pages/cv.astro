@@ -1,0 +1,236 @@
+---
+// One-page A4 CV, built from the same data as the site so the two never drift apart.
+// `npm run cv` prints this page to public/cv.pdf, which switches on the homepage's
+// "Download CV" button. Not linked from the site, kept out of the sitemap and noindexed.
+// Privacy: no phone number (the PDF is public). Add it by hand for direct applications.
+import {
+  PROFILE,
+  EXPERIENCE,
+  PROJECTS,
+  EDUCATION,
+  CERTIFICATIONS,
+  SKILLS,
+  LEADERSHIP,
+  REFEREES,
+  PEOPLE_SKILLS,
+} from '../data.ts';
+
+const strip = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+// myPowervision is left out here: it's already the first Powervision bullet.
+const cvProjects = ['flask-setup', 'cogniadapt', 'pricepick']
+  .map((slug) => PROJECTS.find((p) => p.slug === slug))
+  .filter((p): p is (typeof PROJECTS)[number] => Boolean(p));
+const skills = SKILLS.filter((s) => s.area !== 'Learning next');
+const languages = PEOPLE_SKILLS[0];
+/** Shorter legal suffix on paper only; the site keeps the full name. */
+const org = (o: string) => o.replace('(Private) Limited', '(Pvt) Ltd');
+/** Paper-only short forms so each certificate fits on one or two lines. */
+const certTitle = (t: string) => t.replace('National Foundation Certificate: ', 'NFC, ');
+const certMeta = (c: (typeof CERTIFICATIONS)[number]) => {
+  const grade = /graded (\w+)/.exec(c.focus)?.[1];
+  return [c.issuer.replace('Matsuo-Iwasawa Lab, ', ''), c.year, grade].filter(Boolean);
+};
+/** The current role gets every bullet; earlier roles their first three. */
+const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : r.bullets.slice(0, 3));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{PROFILE.fullName} – CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="sheet">
+      <header class="top">
+        <div>
+          <h1>{PROFILE.fullName}</h1>
+          <p class="role">{PROFILE.title} · {PROFILE.location}</p>
+        </div>
+        <ul class="contact">
+          <li><a href={PROFILE.social.email}>{PROFILE.email}</a></li>
+          <li><a href={PROFILE.social.linkedin}>{strip(PROFILE.social.linkedin)}</a></li>
+          <li><a href={PROFILE.social.github}>{strip(PROFILE.social.github)}</a></li>
+        </ul>
+      </header>
+
+      <p class="summary">{PROFILE.bio} Open to {PROFILE.openTo}.</p>
+
+      <div class="cols">
+        <div class="main">
+          <section>
+            <h2>Experience</h2>
+            {EXPERIENCE.map((r) => (
+              <article class="item">
+                <div class="line">
+                  <h3>{r.title} <span>· {org(r.org)}</span></h3>
+                  <p class="when">{r.period}</p>
+                </div>
+                <ul class="bullets">
+                  {bulletsFor(r).map((b) => <li>{b}</li>)}
+                </ul>
+              </article>
+            ))}
+          </section>
+
+          <section>
+            <h2>Projects</h2>
+            {cvProjects.map((p) => (
+              <article class="item">
+                <div class="line">
+                  <h3>{p.title} <span>· {p.tileMeta}</span></h3>
+                  {p.period && <p class="when">{p.period}</p>}
+                </div>
+                <p class="text">
+                  {p.summary}
+                  {p.repo && <> <a href={p.repo}>{strip(p.repo)}</a></>}
+                </p>
+              </article>
+            ))}
+          </section>
+
+          <section>
+            <h2>Education</h2>
+            {EDUCATION.map((e) => (
+              <article class="item">
+                <div class="line">
+                  <h3>{e.qualification}</h3>
+                  <p class="when">{e.dates}</p>
+                </div>
+                <p class="org">{e.institution}</p>
+                {e.result !== 'In progress' && <p class="text">{e.result}</p>}
+              </article>
+            ))}
+          </section>
+        </div>
+
+        <aside class="side">
+          <section>
+            <h2>Skills</h2>
+            {skills.map((s) => (
+              <p class="kv"><b>{s.area}</b>{s.items.join(', ')}</p>
+            ))}
+            <p class="kv"><b>Languages</b>{languages}</p>
+          </section>
+
+          <section>
+            <h2>Certifications</h2>
+            <ul class="list">
+              {CERTIFICATIONS.map((c) => (
+                <li><b>{certTitle(c.title)}</b><span>{certMeta(c).map((m, i) => <>{i > 0 && ' · '}<span class="nw">{m}</span></>)}</span></li>
+              ))}
+              <li><b>Driver's licence, Class 2</b></li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Leadership</h2>
+            <ul class="list">
+              {LEADERSHIP.map((l) => (
+                <li class="compact"><b>{l.role}</b>, {l.org}{l.period && <span>{l.period}</span>}</li>
+              ))}
+            </ul>
+          </section>
+
+          <section>
+            <h2>References</h2>
+            <ul class="list">
+              {REFEREES.map((r) => (
+                <li><b>{r.name}</b><span>{r.role}</span></li>
+              ))}
+            </ul>
+            <p class="note">Contact details on request.</p>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #111214;
+    --muted: #4f5664;
+    --line: #e4e6eb;
+    --accent: #1e5eff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #e9ebef; }
+  body {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 8pt;
+    line-height: 1.4;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  a { color: inherit; text-decoration: none; }
+  b, h3 { font-weight: 500; }
+
+  .sheet {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 24px auto;
+    padding: 10.5mm 12.5mm 8mm;
+    background: #fff;
+    box-shadow: 0 2px 18px rgba(17, 18, 20, .12);
+  }
+  @media print {
+    html { background: #fff; }
+    .sheet { margin: 0; box-shadow: none; }
+  }
+
+  .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8mm; padding-bottom: 3.4mm; border-bottom: 2px solid var(--accent); }
+  h1 { font-size: 20pt; line-height: 1.1; font-weight: 500; letter-spacing: -.01em; }
+  .role { margin-top: 1.5mm; font-size: 9.5pt; color: var(--muted); font-weight: 400; }
+  .contact { list-style: none; text-align: right; font-size: 8pt; line-height: 1.6; }
+  .contact a { color: var(--accent); }
+
+  .summary { margin-top: 3mm; font-size: 8.5pt; line-height: 1.48; }
+
+  .cols { display: grid; grid-template-columns: 1fr 62mm; gap: 7mm; margin-top: 3.6mm; }
+  section + section { margin-top: 2.9mm; }
+  h2 {
+    font-size: 7.5pt;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 1mm;
+    margin-bottom: 1.6mm;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .item + .item { margin-top: 1.8mm; }
+  .line { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
+  h3 { font-size: 8.5pt; }
+  /* The org moves to the next line as a whole rather than splitting mid-name. */
+  h3 span { display: inline-block; font-weight: 300; color: var(--muted); }
+  .when { flex: none; font-size: 7.8pt; color: var(--muted); }
+  .bullets { list-style: none; margin-top: .7mm; }
+  /* Dot drawn as a background, not a positioned ::before, so the PDF's text layer keeps
+     plain reading order for applicant-tracking systems. */
+  .bullets li { padding-left: 3.4mm; background: radial-gradient(circle, var(--accent) 0 45%, transparent 52%) no-repeat .2mm .5em / 1.4mm 1.4mm; }
+  .bullets li + li { margin-top: .3mm; }
+  .text { margin-top: .6mm; }
+  .org { color: var(--muted); }
+  .nw { white-space: nowrap; }
+  .text a { color: var(--accent); white-space: nowrap; }
+
+  .side { font-size: 7.6pt; }
+  .kv b { display: block; }
+  .kv + .kv { margin-top: 1.1mm; }
+  .list { list-style: none; }
+  .list li + li { margin-top: 1mm; }
+  .list .compact b { display: inline; }
+  .list b { display: block; }
+  .list > li > span { display: block; color: var(--muted); }
+  .note { margin-top: 1.4mm; color: var(--muted); font-style: italic; }
+</style>

@@ -21,3 +21,17 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Raw screenshots before processing (processed copies go to public/images/projects)
+screenshots-inbox/
+
+# Astro's generated types
+.astro/
+
+# Kept on this computer only: planning notes (personal notes, the school's DDSops360
+# account usernames, permission status) and the old React version.
+LAUNCH_CHECKLIST.md
+PORTFOLIO_CONTENT.md
+LINKEDIN_PROFILE.md
+WEBSITE_VISION.md
+_legacy/

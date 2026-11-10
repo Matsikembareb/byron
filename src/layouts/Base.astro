@@ -1,0 +1,144 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, SITE_URL } from '../config.ts';
+import { PROFILE } from '../data.ts';
+
+interface Props {
+  /** Appended with the site name: "Title · Byron Matsikembare". */
+  title?: string;
+  /** Exact <title>, used verbatim. Takes precedence over `title`. */
+  metaTitle?: string;
+  description?: string;
+  image?: string;
+  /** Set true on pages that should not be indexed */
+  noindex?: boolean;
+  /** Extra JSON-LD object injected into the page (e.g. per-project schema) */
+  jsonld?: Record<string, unknown>;
+  /** og:type — "article" on blog posts. */
+  ogType?: string;
+}
+
+const {
+  title,
+  metaTitle,
+  description = SITE.description,
+  image = SITE.ogImage,
+  noindex = false,
+  jsonld,
+  ogType = 'website',
+} = Astro.props;
+
+const pageTitle = metaTitle ?? (title ? `${title} \u00b7 ${SITE.shortTitle}` : SITE.title);
+const canonical = new URL(Astro.url.pathname, SITE_URL).href.replace(/\/$/, '') || SITE_URL;
+const ogImageAbs = new URL(image, SITE_URL).href;
+const personId = `${SITE_URL.replace(/\/$/, '')}/#person`;
+
+// Site-wide Person + WebSite graph. A stable @id lets every other page on the
+// site (and the ProfilePage schema on /about) point at the same Person node.
+// Phone number deliberately excluded — see PROFILE.showPhone in data.ts.
+const siteSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: PROFILE.name,
+      alternateName: PROFILE.fullName,
+      url: SITE_URL,
+      ...(PROFILE.portrait ? { image: new URL(PROFILE.portrait, SITE_URL).href } : {}),
+      jobTitle: PROFILE.title,
+      email: PROFILE.email,
+      description:
+        'Python full-stack developer and Computer Science student at Harare Institute of Technology.',
+      address: { '@type': 'PostalAddress', addressLocality: 'Harare', addressCountry: 'ZW' },
+      affiliation: { '@type': 'CollegeOrUniversity', name: 'Harare Institute of Technology' },
+      alumniOf: [
+        { '@type': 'HighSchool', name: "St Faith's High School" },
+        { '@type': 'HighSchool', name: 'Kriste Mambo High School' },
+      ],
+      knowsAbout: [
+        'Python', 'Flask', 'Django', 'FastAPI', 'React', 'MySQL', 'PostgreSQL', 'MongoDB',
+      ],
+      knowsLanguage: ['sn', 'en'],
+      sameAs: [PROFILE.social.github, PROFILE.social.linkedin].filter(Boolean),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL.replace(/\/$/, '')}/#website`,
+      url: SITE_URL,
+      name: SITE.shortTitle,
+      publisher: { '@id': personId },
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={SITE.keywords} />
+    <meta name="author" content={PROFILE.name} />
+    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex,nofollow" /> : <meta name="robots" content="index,follow,max-image-preview:large" />}
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1d1e21" media="(prefers-color-scheme: dark)" />
+
+    <!-- Theme: stored choice, else the system setting. Runs before first paint, so no flash. -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, t = null;
+        d.classList.add('js');
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', t);
+      })();
+    </script>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.shortTitle} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
+    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+
+  </head>
+  <body class="min-h-screen bg-bg text-ink antialiased flex flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] btn btn-primary">Skip to content</a>
+    <Nav />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
