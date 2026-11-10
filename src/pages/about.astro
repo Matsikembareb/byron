@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Portrait from '../components/Portrait.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { PROFILE } from '../data.ts';
+import { SITE_URL } from '../config.ts';
+
+const facts = [
+  { label: 'Current role', value: 'IT Systems Developer, Die Deutsche Schule Harare' },
+  { label: 'Based in', value: 'Harare, Zimbabwe' },
+  { label: 'Studying', value: 'BTech (Hons) Computer Science, Harare Institute of Technology' },
+  { label: 'Core stack', value: 'Python, Flask, Django, FastAPI, React' },
+  { label: 'Languages', value: 'Shona (native), English (fluent)' },
+  { label: 'Graduating', value: '2027' },
+  { label: 'Open to', value: 'Roles, freelance projects, business partnerships' },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: new URL('/about', SITE_URL).href,
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${SITE_URL.replace(/\/$/, '')}/#person`,
+    name: PROFILE.name,
+    alternateName: PROFILE.fullName,
+    jobTitle: PROFILE.title,
+    ...(PROFILE.portrait ? { image: new URL(PROFILE.portrait, SITE_URL).href } : {}),
+    sameAs: [PROFILE.social.github, PROFILE.social.linkedin].filter(Boolean),
+  },
+};
+---
+
+<Base
+  metaTitle="About Byron Matsikembare – Developer & Community Leader"
+  description="Meet Byron Matsikembare: Python full-stack developer at Die Deutsche Schule Harare, HIT Computer Science student and Friendship Bench counsellor."
+  jsonld={schema}
+>
+  <PageHeader eyebrow="About" title="About Byron Matsikembare" />
+
+  <section class="wrap pb-20 lg:pb-32">
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-14 lg:gap-24 items-start">
+      <div class="article">
+      <p>
+        I'm {PROFILE.fullName}, a Python full-stack developer from Zimbabwe. I'm studying for a
+        BTech (Honours) in Computer Science at Harare Institute of Technology, and I build web apps
+        that make everyday work simpler.
+      </p>
+      <p>
+        My path into software started with maths. At St Faith's High School I earned A grades in
+        Computer Science and Mechanical Mathematics, part of 21 points across five A-Level subjects.
+        Since then I've moved from small scripts to full applications.
+      </p>
+      <p>
+        Today I work mostly in Python, with Flask, Django and FastAPI on the back end and React on the
+        front end. Since September 2026 I've been an IT systems developer at Die Deutsche Schule
+        Harare, where I built and now run DDSops360, the platform the school uses for enrolment, its
+        library, ID cards and campus access. Before that I spent a year as an IT intern at Powervision,
+        building internal web applications and automating the reporting that used to be done by hand,
+        then worked as a developer at Muzukuru Streaming on media pipelines and admin tooling for a
+        live-streaming platform.
+      </p>
+      <p>
+        Alongside my job I take on freelance work: websites, custom software, web-based wedding
+        invitations and online voting, consulting, and help with projects that need an extra pair of
+        hands. I also guide students who are learning to code, and I share what I can for free, like my
+        open-source <a href="/projects/flask-setup">Flask starter</a>. One of my goals is to start a
+        software company, and I'm looking for business partners to build it with.
+      </p>
+      <p>
+        Outside code, I counsel students with Friendship Bench and run peer education sessions with
+        O3 Plus. I chair the CoDe Youth Advisory Committee, serve as secretary for SAYWHAT and belong
+        to Enactus. That work taught me to listen first, explain clearly and keep confidences, and it
+        makes me a better developer.
+      </p>
+      <p>
+        When I'm not coding, I'm usually on a basketball court. Church is a big part of my life, and so
+        is giving back to the community around me. There's almost always music playing, I'll happily
+        talk cars with anyone, and nothing resets me like time outdoors, ideally ending with a good sunset.
+      </p>
+      <p>
+        You can see the <a href="/experience" >full record of my work</a>
+        and leadership roles, or read about
+        <a href="/projects" >what I've built</a>.
+      </p>
+      </div>
+
+      <aside class="space-y-8 lg:sticky lg:top-32">
+        <Portrait class="w-full max-w-[360px] aspect-[415/533] h-auto" />
+        <div class="border-t border-line">
+          <h2 class="eyebrow pt-6">Quick facts</h2>
+          <dl class="mt-4 divide-y divide-[var(--border)]">
+            {facts.map((f) => (
+              <div class="py-3.5 grid grid-cols-[120px_1fr] gap-4">
+                <dt class="text-[14px] text-muted">{f.label}</dt>
+                <dd class="text-[14px] text-ink">{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

@@ -1,0 +1,109 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PostTitle from '../../components/PostTitle.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import LinkedInPost from '../../components/LinkedInPost.astro';
+import { PROJECTS, PROFILE } from '../../data.ts';
+import { getPublishedPosts } from '../../lib/blog.ts';
+import { SITE_URL } from '../../config.ts';
+import { LINKEDIN_POSTS } from '../../data/linkedin.ts';
+
+export function getStaticPaths() {
+  return PROJECTS.filter((p) => p.caseStudy).map((p) => ({
+    params: { slug: p.slug },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const related = (await getPublishedPosts()).find((p) => p.slug === project.relatedPost);
+const liPost = LINKEDIN_POSTS.find((e) => e.project === project.slug);
+
+const facts = [
+  { label: 'Status', value: project.status },
+  { label: 'When', value: project.period },
+  { label: 'Role', value: project.role },
+  { label: 'Stack', value: project.stack.join(' · ') },
+].filter((f) => f.value);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.title,
+  headline: project.h1,
+  description: project.metaDescription,
+  url: new URL(`/projects/${project.slug}`, SITE_URL).href,
+  keywords: project.stack.join(', '),
+  creator: { '@id': `${SITE_URL.replace(/\/$/, '')}/#person` },
+  author: { '@type': 'Person', name: PROFILE.name },
+};
+---
+
+<Base metaTitle={project.metaTitle} description={project.metaDescription} jsonld={schema}>
+  <article>
+    <header class="wrap pt-10 lg:pt-16">
+      <a href="/projects" class="link-arrow"><Icon name="arrow-right" size={14} class="rotate-180" /> all projects</a>
+      <div class="mt-10 max-w-[900px]">
+        <p class="eyebrow">{[project.status, project.period].filter(Boolean).join(' · ')}</p>
+        <h1 class="h-section mt-4">{project.h1}</h1>
+        <p class="mt-5 text-[18px] leading-[1.65] text-muted">{project.tagline}</p>
+        {(project.url || project.repo) && (
+          <div class="mt-8 flex flex-wrap gap-3">
+            {project.url && <a href={project.url} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Visit live site <Icon name="arrow-up-right" size={16} /></a>}
+            {project.repo && <a href={project.repo} target="_blank" rel="noopener noreferrer" class="btn btn-outline">View the code <Icon name="arrow-up-right" size={16} /></a>}
+          </div>
+        )}
+      </div>
+    </header>
+
+    <div class="wrap mt-12">
+      <div class="flex items-end h-[200px] md:h-[320px] p-6 md:p-10 rounded" style={`background:${project.accent}`} aria-hidden="true">
+        <span class:list={['text-[32px] md:text-[56px] leading-none font-medium', project.tileDarkText ? 'text-[#111214]' : 'text-white']}>{project.tileTitle ?? project.title}</span>
+      </div>
+    </div>
+
+    <div class="wrap py-14 lg:py-20 grid lg:grid-cols-[300px_minmax(0,1fr)] gap-12 lg:gap-24 items-start">
+      <dl class="border-t border-line lg:sticky lg:top-32">
+        {facts.map((f) => (
+          <div class="py-4 border-b border-line">
+            <dt class="eyebrow">{f.label}</dt>
+            <dd class="mt-1.5 text-[15px] text-ink">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div>
+        <div class="article">
+          {project.blocks.map((b) => (
+            <>
+              <h2>{b.h}</h2>
+              <p>{b.body}</p>
+            </>
+          ))}
+        </div>
+
+        {liPost && (
+          <div class="mt-14">
+            <h2 class="eyebrow">Shared on LinkedIn</h2>
+            <div class="mt-5"><LinkedInPost embed={liPost.embed} title={liPost.title} height={liPost.height} url={liPost.url} /></div>
+          </div>
+        )}
+
+        <div class="mt-14 pt-8 border-t border-line max-w-prose space-y-3">
+          {related && (
+            <p class="text-[15px] text-muted">
+              Related post:
+              <a href={`/blog/${related.slug}`} class="link-arrow ml-1 text-[15px] normal-case"><PostTitle text={related.data.title} /> <Icon name="arrow-right" size={14} /></a>
+            </p>
+          )}
+          <p>
+            <a href="/projects" class="link-arrow">all projects <Icon name="arrow-right" size={14} /></a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <CtaBand heading="Want something like this built?" body="Have a role, an internship or a web project in mind? I’d love to hear about it." />
+</Base>
