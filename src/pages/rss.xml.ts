@@ -10,11 +10,12 @@ export async function GET(context: APIContext) {
     title: `${SITE.shortTitle} – Blog`,
     description: 'Notes on Python, Flask, Django and React, and on studying and building software in Zimbabwe.',
     site: context.site!,
+    trailingSlash: false, // match the canonical URLs (/blog/post, no slash)
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date!,
-      link: `/blog/${post.slug}/`,
+      link: `/blog/${post.slug}`,
       categories: [post.data.category, ...post.data.tags],
     })),
     customData: '<language>en</language>',
