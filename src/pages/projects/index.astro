@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import WorkTile from '../../components/WorkTile.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { PROJECTS, PROFILE } from '../../data.ts';
+
+const caseStudies = PROJECTS.filter((p) => p.caseStudy);
+const shortCards = PROJECTS.filter((p) => !p.caseStudy);
+const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const n = (k: number) => words[k] ?? String(k);
+---
+
+<Base
+  metaTitle="Projects – Python & React Portfolio, Byron Matsikembare"
+  description="Case studies of web apps by Byron Matsikembare: myPowervision job scheduling, PricePick deal aggregator, and more Python and React builds."
+>
+  <PageHeader
+    eyebrow="Work"
+    title="Projects: Python and React web apps"
+    subtitle={`A portfolio of Python and Flask projects: ${n(caseStudies.length)} case studies that show how I work, and ${n(shortCards.length)} shorter builds, from a mobile app to a ministry website.`}
+  />
+
+  <section class="wrap pb-16 lg:pb-24" aria-label="Case studies">
+    <div class="grid md:grid-cols-2 gap-x-10 gap-y-14 lg:gap-y-16">
+      {caseStudies.map((p) => <WorkTile project={p} />)}
+    </div>
+  </section>
+
+  <section class="wrap pb-16 lg:pb-24" aria-labelledby="more-h">
+    <p class="eyebrow">More builds</p>
+    <h2 id="more-h" class="sr-only">More builds</h2>
+    <ul class="mt-6 border-t border-line">
+      {shortCards.map((p) => (
+        <li class="grid grid-cols-[14px_1fr] md:grid-cols-[14px_1fr_1.2fr] items-baseline gap-x-5 gap-y-1 py-6 border-b border-line">
+          <span class="w-3.5 h-3.5 rounded-sm translate-y-0.5" style={`background:${p.accent}`} aria-hidden="true"></span>
+          <p class="text-[20px] text-ink">{p.title}</p>
+          <div class="col-start-2 md:col-start-auto">
+            <p class="text-[15px] text-muted">{p.tagline}</p>
+            {(p.url || p.repo) && (
+              <p class="mt-2 flex flex-wrap gap-x-5">
+                {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" class="link-arrow">visit site <Icon name="arrow-up-right" size={14} /></a>}
+                {p.repo && <a href={p.repo} target="_blank" rel="noopener noreferrer" class="link-arrow">view the code <Icon name="arrow-up-right" size={14} /></a>}
+              </p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-10">
+      <a href={PROFILE.social.github} target="_blank" rel="noopener noreferrer me" class="link-arrow">
+        the code for my projects lives on github <Icon name="arrow-up-right" size={14} />
+      </a>
+    </p>
+  </section>
+
+  <CtaBand />
+</Base>

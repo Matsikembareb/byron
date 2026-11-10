@@ -1,0 +1,45 @@
+---
+// Blog card: cover (or the category glyph on a surface block), label, title, "read more →".
+import Icon from './Icon.astro';
+import PostTitle from './PostTitle.astro';
+import { CATEGORY_META, postLabel, type BlogPost } from '../lib/blog.ts';
+
+interface Props {
+  post: BlogPost;
+  /** /blog shows the date in the label; the homepage design doesn't. */
+  withDate?: boolean;
+  /** Taller media block, for the /blog grid. */
+  tall?: boolean;
+}
+const { post, withDate = false, tall = false } = Astro.props;
+const { cover, coverAlt, coverWidth, coverHeight, category } = post.data;
+const href = `/blog/${post.slug}`;
+---
+
+<article class="group relative flex flex-col">
+  {
+    cover ? (
+      <img
+        src={cover}
+        alt={coverAlt}
+        width={coverWidth ?? 1200}
+        height={coverHeight ?? 630}
+        loading="lazy"
+        decoding="async"
+        class:list={['w-full object-cover rounded bg-surface', tall ? 'aspect-[1200/630]' : 'h-20']}
+      />
+    ) : (
+      <div
+        class:list={['grid place-items-center rounded bg-surface text-muted font-light select-none', tall ? 'aspect-[1200/630] text-[56px]' : 'h-20 text-[48px]']}
+        aria-hidden="true"
+      >
+        {CATEGORY_META[category].glyph}
+      </div>
+    )
+  }
+  <p class="mt-5 text-[11px] leading-4 tracking-[2px] uppercase text-muted">{postLabel(post, withDate)}</p>
+  <h3 class="mt-2 text-[18px] lg:text-[20px] leading-[1.45] font-normal text-ink">
+    <a href={href} class="after:absolute after:inset-0 group-hover:text-accent transition-colors"><PostTitle text={post.data.title} /></a>
+  </h3>
+  <span class="link-arrow mt-3 text-[13px]" aria-hidden="true">read more <Icon name="arrow-right" size={13} /></span>
+</article>

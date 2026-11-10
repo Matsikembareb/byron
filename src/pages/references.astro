@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { REFEREES, PROFILE } from '../data.ts';
+
+const withQuotes = REFEREES.filter((r) => r.quote);
+---
+
+<Base
+  metaTitle="References & Testimonials – Byron Matsikembare"
+  description="What lecturers, managers and colleagues say about working with Byron Matsikembare, Python developer in Harare. Full references available on request."
+>
+  <PageHeader
+    eyebrow="References"
+    title="References and testimonials"
+    subtitle="Byron Matsikembare's references: my department chair at HIT, and the people who supervised my work at Powervision and Muzukuru Streaming."
+  />
+
+  <section class="wrap pb-12">
+    <p class="max-w-[720px] text-[18px] leading-[1.7] text-ink">
+      These are people who have supervised and taught me, and I'm grateful for their time and honest
+      feedback. Full contact details are available on request:
+      <a href={PROFILE.social.email} class="text-accent underline underline-offset-4">email me</a> and I'll put you in touch.
+    </p>
+  </section>
+
+  <section class="wrap pb-16 lg:pb-24" aria-label="Referees">
+    <ul class="border-t border-line">
+      {REFEREES.map((r) => (
+        <li class="grid md:grid-cols-[220px_1fr] gap-x-10 gap-y-2 py-8 border-b border-line">
+          <p class="text-[15px] text-muted">{r.relationship}</p>
+          <div>
+            <h2 class="text-[22px] font-normal text-ink">{r.name}</h2>
+            <p class="mt-1 text-[15px] text-muted">{r.role}</p>
+            {r.quote && (
+              <blockquote class="mt-5 max-w-[760px] text-[18px] leading-[1.7] text-ink border-l-2 border-accent pl-5">{r.quote}</blockquote>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    {withQuotes.length === 0 && (
+      <p class="mt-8 max-w-[720px] text-[15px] leading-[1.7] text-muted">
+        Written testimonials from these referees are being collected and will appear here once each
+        one has given permission. In the meantime, I'm happy to arrange a direct conversation.
+      </p>
+    )}
+  </section>
+
+  <section class="bg-surface">
+    <div class="wrap py-16 lg:py-20 grid md:grid-cols-[1fr_auto] gap-8 items-center">
+      <div class="max-w-[640px]">
+        <p class="eyebrow">On privacy</p>
+        <p class="mt-4 text-[17px] leading-[1.7] text-ink">
+          I don't publish my referees' phone numbers or email addresses. Doing so exposes them to spam and
+          scams, so I share their details on request instead.
+        </p>
+      </div>
+      <a href="/contact" class="btn btn-primary self-start md:self-auto">Request references</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design tokens ─────────────────────────────────────────────────────────
+   Source: WEBSITE_VISION.md + Figma file wFRGUsG4w6ZuGg031QS36J (frames 9:77, 9:351).
+   Four values are nudged from the spec so both themes pass WCAG AA:
+     --muted (light)        #6b7280 → #6a717f  (4.47 → 4.54 on --surface)
+     --accent-fill (dark)   new, #2c6bff         (white on the spec's #4d82ff is 3.53)
+     --accent (dark)        #4d82ff → #5487ff  (4.28 → 4.52 for links on --surface)
+   --accent stays the spec colour for text and links; --accent-fill is for
+   solid backgrounds that carry white text (buttons, the CTA band). */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f5f6f8;
+  --border: #e4e6eb;
+  --text: #111214;
+  --muted: #6a717f;
+  --accent: #1e5eff;
+  --accent-fill: #1e5eff;
+  --on-accent: #ffffff;
+  --ok: #16a34a;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #1d1e21;
+  --surface: #25262a;
+  --border: #34363b;
+  --text: #ffffff;
+  --muted: #a9abb0;
+  --accent: #5487ff;
+  --accent-fill: #2c6bff;
+  --on-accent: #ffffff;
+  --ok: #22c55e;
+}
+
+/* No JavaScript: follow the system setting. With JS, the inline script in
+   Base.astro sets data-theme before first paint, so this never flashes. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #1d1e21;
+    --surface: #25262a;
+    --border: #34363b;
+    --text: #ffffff;
+    --muted: #a9abb0;
+    --accent: #5487ff;
+    --accent-fill: #2c6bff;
+    --on-accent: #ffffff;
+    --ok: #22c55e;
+  }
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 300;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-weight: 500; }
+
+::selection { background: var(--accent-fill); color: var(--on-accent); }
+
+/* Visible focus for keyboard users, in both themes. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Component classes live in Tailwind's components layer so utilities (e.g. normal-case) can override them. */
+@layer components {
+/* ─── Layout ────────────────────────────────────────────────────────────── */
+/* 1440 frame, 1200 content, 120px side padding on desktop. */
+.wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (min-width: 768px) { .wrap { padding-inline: 40px; } }
+@media (min-width: 1280px) { .wrap { padding-inline: 120px; } }
+
+/* ~128px between sections on desktop. */
+.section { padding-block: 72px; }
+@media (min-width: 1024px) { .section { padding-block: 128px; } }
+
+/* ─── Components ────────────────────────────────────────────────────────── */
+/* Small spaced-out label above every section heading. */
+.eyebrow {
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.h-section {
+  font-size: 32px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--text);
+}
+@media (min-width: 768px) { .h-section { font-size: 44px; line-height: 1.25; } }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4;
+  padding: 14px 24px;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn-primary { background: var(--accent-fill); color: var(--on-accent); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-outline { border: 1px solid var(--border); color: var(--text); font-weight: 400; }
+.btn-outline:hover { border-color: var(--text); }
+
+/* Lowercase "all projects →" style links. */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--accent);
+  text-transform: lowercase;
+}
+.link-arrow:hover { text-decoration: underline; text-underline-offset: 4px; }
+.link-arrow svg { transition: transform .15s ease; }
+.link-arrow:hover svg { transform: translateX(2px); }
+}
+
+/* Spec: Lucide icons with a 1.5px stroke at every size (strokes don't scale with the icon). */
+.lucide * { vector-effect: non-scaling-stroke; }
+
+/* "≠" has no glyph in Poppins' Latin subset; draw it from a symbol font. */
+.neq {
+  font-family: 'Segoe UI Symbol', 'Apple Symbols', 'DejaVu Sans', 'Noto Sans Math', system-ui, sans-serif;
+  letter-spacing: 0;
+  margin: 0 0.08em;
+}
+
+/* ─── Article typography (blog posts, case studies) ─────────────────────── */
+.article {
+  max-width: 720px;
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.article > * + * { margin-top: 1.25em; }
+.article > :first-child { margin-top: 0; }
+.article h2 { font-size: 28px; line-height: 1.3; margin-top: 2em; }
+.article h3 { font-size: 22px; line-height: 1.35; margin-top: 1.75em; }
+.article p, .article li { color: var(--text); }
+.article strong { font-weight: 500; }
+.article a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.article ul { list-style: disc; padding-left: 1.25em; }
+.article ol { list-style: decimal; padding-left: 1.25em; }
+.article li + li { margin-top: .4em; }
+.article li::marker { color: var(--muted); }
+.article blockquote { border-left: 2px solid var(--accent); padding-left: 1em; color: var(--muted); }
+.article hr { border: 0; border-top: 1px solid var(--border); }
+.article img { border-radius: 4px; }
+.article table { width: 100%; font-size: 15px; line-height: 1.5; border-collapse: collapse; display: block; overflow-x: auto; }
+.article th, .article td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.article th { font-weight: 500; color: var(--muted); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+.article :not(pre) > code {
+  font-size: .88em;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .1em .35em;
+}
+.article pre {
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 18px 20px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+@media (max-width: 767px) { .article { font-size: 17px; } }
+
+/* Shiki renders both themes; switch with data-theme (and the system setting without JS). */
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; }
+:root[data-theme='dark'] .astro-code { background-color: var(--shiki-dark-bg) !important; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code,
+  :root:not([data-theme='light']) .astro-code span { color: var(--shiki-dark) !important; }
+  :root:not([data-theme='light']) .astro-code { background-color: var(--shiki-dark-bg) !important; }
+}

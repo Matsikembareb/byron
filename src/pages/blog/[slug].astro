@@ -1,0 +1,127 @@
+---
+// One page per published post in src/content/blog. Drafts are never built.
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PostTitle from '../../components/PostTitle.astro';
+import LinkedInPost from '../../components/LinkedInPost.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { SITE, SITE_URL } from '../../config.ts';
+import { PROFILE, PROJECTS } from '../../data.ts';
+import { getPublishedPosts, postLabel, type BlogPost } from '../../lib/blog.ts';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts(); // newest first
+  return posts.map((post, i) => ({
+    params: { slug: post.slug },
+    props: { post, newer: posts[i - 1] ?? null, older: posts[i + 1] ?? null },
+  }));
+}
+
+interface Props {
+  post: BlogPost;
+  newer: BlogPost | null;
+  older: BlogPost | null;
+}
+const { post, newer, older } = Astro.props;
+const { Content } = await post.render();
+const d = post.data;
+
+const metaTitle = d.seoTitle ?? d.title;
+if (metaTitle.length > 60) {
+  throw new Error(`"${post.slug}": title tag is ${metaTitle.length} characters; add a seoTitle of 60 or fewer.`);
+}
+const url = new URL(`/blog/${post.slug}`, SITE_URL).href;
+const image = d.cover ?? SITE.ogImage;
+const project = d.project ? PROJECTS.find((p) => p.slug === d.project) : undefined;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: metaTitle,
+  description: d.description,
+  image: new URL(image, SITE_URL).href,
+  datePublished: d.date?.toISOString().slice(0, 10),
+  dateModified: (d.updated ?? d.date)?.toISOString().slice(0, 10),
+  keywords: d.tags.join(', ') || undefined,
+  author: { '@type': 'Person', name: PROFILE.name, url: new URL('/about', SITE_URL).href },
+  publisher: { '@id': `${SITE_URL.replace(/\/$/, '')}/#person` },
+  mainEntityOfPage: url,
+};
+---
+
+<Base metaTitle={metaTitle} description={d.description} image={image} ogType="article" jsonld={schema}>
+  <article class="wrap pt-10 lg:pt-16 pb-20 lg:pb-28">
+    <div class="mx-auto max-w-prose">
+      <a href="/blog" class="link-arrow"><Icon name="arrow-right" size={14} class="rotate-180" /> all posts</a>
+
+      <p class="eyebrow mt-10">{postLabel(post)}</p>
+      <h1 class="mt-4 text-[34px] md:text-[44px] leading-[1.2] font-medium text-ink"><PostTitle text={d.title} /></h1>
+      <p class="mt-5 text-[18px] leading-[1.65] text-muted">{d.description}</p>
+
+      {d.source === 'linkedin' && (
+        <p class="mt-5 text-[14px] text-muted">
+          {d.linkedinUrl ? (
+            <a href={d.linkedinUrl} target="_blank" rel="noopener noreferrer" class="link-arrow normal-case">
+              Originally shared on LinkedIn <Icon name="arrow-up-right" size={14} />
+            </a>
+          ) : (
+            'Originally shared on LinkedIn.'
+          )}
+        </p>
+      )}
+    </div>
+
+    {d.cover && (
+      <figure class="mx-auto max-w-prose mt-10">
+        <img
+          src={d.cover}
+          alt={d.coverAlt}
+          width={d.coverWidth ?? 1200}
+          height={d.coverHeight ?? 630}
+          class="w-full h-auto rounded border border-line"
+          decoding="async"
+        />
+      </figure>
+    )}
+
+    <div class="article mx-auto mt-10">
+      <Content />
+    </div>
+
+    {d.linkedinEmbed && (
+      <div class="mx-auto max-w-prose mt-12">
+        <LinkedInPost embed={d.linkedinEmbed} title={d.title} url={d.linkedinUrl} />
+      </div>
+    )}
+
+    <div class="mx-auto max-w-prose mt-14 pt-8 border-t border-line space-y-8">
+      {project && (
+        <p class="text-[15px] text-muted">
+          Related project:
+          <a href={project.caseStudy ? `/projects/${project.slug}` : '/projects'} class="link-arrow ml-1 text-[15px] normal-case">
+            {project.title} <Icon name="arrow-right" size={14} />
+          </a>
+        </p>
+      )}
+
+      {(newer || older) && (
+        <nav class="grid sm:grid-cols-2 gap-6" aria-label="More posts">
+          {older ? (
+            <a href={`/blog/${older.slug}`} class="group block">
+              <span class="eyebrow">Previous</span>
+              <span class="mt-2 block text-[17px] leading-snug text-ink group-hover:text-accent transition-colors"><PostTitle text={older.data.title} /></span>
+            </a>
+          ) : <span />}
+          {newer && (
+            <a href={`/blog/${newer.slug}`} class="group block sm:text-right">
+              <span class="eyebrow">Next</span>
+              <span class="mt-2 block text-[17px] leading-snug text-ink group-hover:text-accent transition-colors"><PostTitle text={newer.data.title} /></span>
+            </a>
+          )}
+        </nav>
+      )}
+    </div>
+  </article>
+
+  <CtaBand />
+</Base>

@@ -1,0 +1,117 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PostCard from '../../components/PostCard.astro';
+import PostTitle from '../../components/PostTitle.astro';
+import LinkedInPost from '../../components/LinkedInPost.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { HOME } from '../../data.ts';
+import { LINKEDIN_POSTS, LINKEDIN_PROFILE } from '../../data/linkedin.ts';
+import { CATEGORY_META, getPublishedPosts, getUpcoming } from '../../lib/blog.ts';
+
+const posts = await getPublishedPosts();
+const upcoming = await getUpcoming(2);
+const categories = (Object.keys(CATEGORY_META) as (keyof typeof CATEGORY_META)[])
+  .map((c) => ({ key: c, label: CATEGORY_META[c].label, n: posts.filter((p) => p.data.category === c).length }))
+  .filter((c) => c.n > 0);
+
+// "From LinkedIn": official embeds first, then posts that started on LinkedIn — three newest.
+const embeds = [...LINKEDIN_POSTS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+const fromLinkedIn = posts.filter((p) => p.data.source === 'linkedin').slice(0, Math.max(0, 3 - embeds.length));
+---
+
+<Base
+  metaTitle="Blog – Python, Flask & Life as a CS Student in Zimbabwe"
+  description="Practical notes on Python, Flask, Django and React, plus honest lessons from studying Computer Science at HIT and building software in Zimbabwe."
+>
+  <section class="wrap pt-12 lg:pt-20 pb-14">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-[720px]">
+        <p class="eyebrow">Blog</p>
+        <h1 class="h-section mt-4">{HOME.blog.heading}</h1>
+        <p class="mt-5 text-[17px] leading-[1.7] text-muted">Once a month, each post answering one question people already search for.</p>
+      </div>
+      <a href="/rss.xml" class="link-arrow shrink-0 md:mb-2">rss feed <Icon name="arrow-up-right" size={14} /></a>
+    </div>
+
+    {categories.length > 1 && (
+      <div class="blog-filters mt-10 flex flex-wrap gap-2" role="group" aria-label="Filter posts by category">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span class="text-muted">{posts.length}</span></button>
+        {categories.map((c) => (
+          <button type="button" class="chip" data-filter={c.key} aria-pressed="false">{c.label} <span class="text-muted">{c.n}</span></button>
+        ))}
+      </div>
+    )}
+
+    <ul class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14" data-post-grid>
+      {posts.map((post) => (
+        <li data-category={post.data.category}><PostCard post={post} withDate tall /></li>
+      ))}
+    </ul>
+  </section>
+
+  {(embeds.length > 0 || fromLinkedIn.length > 0) && (
+    <section class="bg-surface">
+      <div class="wrap py-16 lg:py-24">
+        <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="eyebrow">From LinkedIn</p>
+            <h2 class="h-section mt-4">Shared first on LinkedIn</h2>
+          </div>
+          <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer me" class="link-arrow shrink-0 md:mb-2">
+            follow on linkedin <Icon name="arrow-up-right" size={14} />
+          </a>
+        </div>
+        <div class="mt-10 grid grid-cols-[repeat(auto-fill,minmax(0,320px))] justify-between gap-x-10 gap-y-12 items-start">
+          {embeds.map((e) => <LinkedInPost embed={e.embed} title={e.title} height={e.height} url={e.url} />)}
+          {fromLinkedIn.map((post) => <PostCard post={post} withDate tall />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {upcoming.length > 0 && (
+    <section class="wrap py-16 lg:py-24">
+      <p class="eyebrow">Coming up</p>
+      <ol class="mt-6 border-t border-line">
+        {upcoming.map((post, i) => (
+          <li class="flex items-baseline gap-6 py-5 border-b border-line">
+            <span class="text-[14px] text-muted tabular-nums">{String(posts.length + i + 1).padStart(2, '0')}</span>
+            <span class="text-[18px] text-ink"><PostTitle text={post.data.title} /></span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  <CtaBand />
+</Base>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color .15s ease, background-color .15s ease;
+  }
+  .chip:hover { border-color: var(--text); }
+  .chip[aria-pressed='true'] { background: var(--text); border-color: var(--text); color: var(--bg); }
+  .chip[aria-pressed='true'] span { color: inherit; opacity: .7; }
+  /* Filtering needs JavaScript; without it every post simply shows. */
+  :global(html:not(.js)) .blog-filters { display: none; }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.blog-filters [data-filter]');
+  const items = document.querySelectorAll<HTMLElement>('[data-post-grid] > li');
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    const f = chip.dataset.filter;
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    items.forEach((li) => { li.hidden = f !== 'all' && li.dataset.category !== f; });
+  }));
+</script>

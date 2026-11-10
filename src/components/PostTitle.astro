@@ -1,0 +1,17 @@
+---
+// Renders a post title, giving "≠" its own span. Space Grotesk's Google Fonts subset has no
+// U+2260, so the browser falls back to another font, and the headings' negative letter-spacing
+// then pushes that glyph into the next word. The .neq class in global.css corrects it.
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const parts = text.split('≠');
+---
+
+{parts.map((part, i) => (
+  <>
+    {part}
+    {i < parts.length - 1 && <span class="neq">≠</span>}
+  </>
+))}

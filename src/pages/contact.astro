@@ -1,0 +1,178 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import { PROFILE } from '../data.ts';
+import { CONTACT_FORM_ENDPOINT, WEB3FORMS_ACCESS_KEY } from '../config.ts';
+
+/** Last path segment of a profile URL, so displayed text can never drift from the link. */
+const handle = (url: string) => url.replace(/\/$/, '').split('/').pop() ?? url;
+
+// Phone is opt-in via PROFILE.showPhone — publishing it invites spam calls.
+const channels = [
+  { label: 'Email', value: PROFILE.email, href: PROFILE.social.email },
+  { label: 'LinkedIn', value: handle(PROFILE.social.linkedin), href: PROFILE.social.linkedin },
+  { label: 'GitHub', value: handle(PROFILE.social.github), href: PROFILE.social.github },
+  ...(PROFILE.showPhone
+    ? [{ label: 'Phone / WhatsApp', value: PROFILE.phone, href: `tel:${PROFILE.phone.replace(/\s/g, '')}` }]
+    : []),
+  { label: 'Location', value: PROFILE.location, href: null },
+];
+
+const openTo = [
+  'Graduate developer roles from 2027',
+  'Internships',
+  'Websites and custom software',
+  'Wedding invites and online voting',
+  'Consulting and project assistance',
+  'Learning and collaboration',
+  'Business partnerships',
+  'Talks for students and youth groups',
+];
+
+const subjects = ['Job', 'Internship', 'Website or software', 'Invites or voting', 'Consulting', 'Partnership', 'Other'];
+
+const fields = [
+  { name: 'name', label: 'Name', type: 'text', required: true },
+  { name: 'email', label: 'Email', type: 'email', required: true },
+  { name: 'timeline', label: 'Timeline', type: 'text', required: false },
+] as const;
+---
+
+<Base
+  metaTitle="Contact Byron Matsikembare – Hire a Python Developer"
+  description="Hiring a Python developer or need a web app built? Contact Byron Matsikembare in Harare, Zimbabwe, about internships, roles and projects."
+>
+  <PageHeader
+    eyebrow="Contact"
+    title="Contact Byron Matsikembare"
+    subtitle="Looking to hire a Python developer in Harare, need a website or custom software built, or want to talk about a partnership? Send me a message and I'll reply as soon as I can."
+  />
+
+  <section class="wrap pb-20 lg:pb-32 grid lg:grid-cols-[minmax(0,1fr)_380px] gap-14 lg:gap-24 items-start">
+    <div>
+      {
+        WEB3FORMS_ACCESS_KEY ? (
+          <form id="contact-form" action={CONTACT_FORM_ENDPOINT} method="POST" class="space-y-6 max-w-[640px]">
+            <input type="hidden" name="access_key" value={WEB3FORMS_ACCESS_KEY} />
+            <input type="hidden" name="subject" value="New message from your portfolio" />
+            <input type="hidden" name="from_name" value="byron. portfolio" />
+            {fields.map((f) => (
+              <div>
+                <label for={f.name} class="block text-[14px] text-ink mb-2">
+                  {f.label}{f.required && <span class="text-accent" aria-hidden="true"> *</span>}
+                </label>
+                <input
+                  type={f.type}
+                  id={f.name}
+                  name={f.name}
+                  required={f.required}
+                  autocomplete={f.name === 'email' ? 'email' : f.name === 'name' ? 'name' : 'off'}
+                  class="field"
+                />
+              </div>
+            ))}
+            <div>
+              <label for="topic" class="block text-[14px] text-ink mb-2">What's it about?<span class="text-accent" aria-hidden="true"> *</span></label>
+              <select id="topic" name="topic" required class="field">
+                <option value="">Choose one…</option>
+                {subjects.map((s) => <option value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="message" class="block text-[14px] text-ink mb-2">Message<span class="text-accent" aria-hidden="true"> *</span></label>
+              <textarea id="message" name="message" rows="6" required class="field resize-y"></textarea>
+            </div>
+            {/* Honeypot (Web3Forms' botcheck): hidden from people, tempting to bots. */}
+            <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="flex flex-wrap items-center gap-5">
+              <button type="submit" class="btn btn-primary">Send message <Icon name="arrow-right" size={16} /></button>
+              <p class="text-[13px] text-muted">Required fields are marked *.</p>
+            </div>
+            <p id="form-error" class="hidden text-[15px] leading-[1.6] text-ink border-l-2 border-accent pl-4" role="alert">
+              Sorry, that didn't send. Please try again, or <a href={PROFILE.social.email} class="text-accent underline underline-offset-4">email me directly</a>.
+            </p>
+          </form>
+        ) : null
+      }
+      {
+        WEB3FORMS_ACCESS_KEY ? (
+          <div id="form-thanks" class="hidden border-t border-line pt-8 max-w-[640px]" role="status" tabindex="-1">
+            <h2 class="text-[24px] font-normal text-ink">Thanks! Your message is in, and I'll reply soon.</h2>
+            <p class="mt-3 text-[17px] leading-[1.7] text-muted">It's gone straight to my inbox.</p>
+          </div>
+        ) : (
+          <div class="border-t border-line pt-8 max-w-[640px]">
+            <h2 class="text-[24px] font-normal text-ink">Email is the fastest route</h2>
+            <p class="mt-3 text-[17px] leading-[1.7] text-muted">
+              Tell me who you are, what you're working on and your timeline, and I'll come back to you.
+            </p>
+            <a href={PROFILE.social.email} class="btn btn-primary mt-7">Email me directly <Icon name="arrow-right" size={16} /></a>
+          </div>
+        )
+      }
+
+      <div class="mt-16 max-w-[640px]">
+        <h2 class="eyebrow">Open to</h2>
+        <ul class="mt-5 flex flex-wrap gap-2">
+          {openTo.map((o) => <li class="text-[14px] text-ink border border-line rounded px-3.5 py-2">{o}</li>)}
+        </ul>
+      </div>
+    </div>
+
+    <aside>
+      <h2 class="eyebrow">Other ways to reach me</h2>
+      <dl class="mt-5 border-t border-line">
+        {channels.map((c) => (
+          <div class="py-4 border-b border-line">
+            <dt class="text-[13px] text-muted">{c.label}</dt>
+            <dd class="mt-1 text-[16px] text-ink break-words">
+              {c.href ? (
+                <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener noreferrer me' : undefined} class="hover:text-accent transition-colors">{c.value}</a>
+              ) : c.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .field {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: 300;
+  }
+  .field:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+</style>
+
+<script>
+  // Send in the background and show the thank-you note in place. Without
+  // JavaScript the form still posts normally and Web3Forms shows its own page.
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const thanks = document.getElementById('form-thanks');
+  const error = document.getElementById('form-error');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    button?.setAttribute('disabled', '');
+    error?.classList.add('hidden');
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
+      form.remove();
+      thanks?.classList.remove('hidden');
+      thanks?.focus();
+    } catch {
+      error?.classList.remove('hidden');
+      button?.removeAttribute('disabled');
+    }
+  });
+</script>

@@ -1,272 +1,496 @@
 // ─── Shared Data ─────────────────────────────────────────────────────────────
+// All copy here is derived from PORTFOLIO_CONTENT.md, which in turn comes from
+// Byron's CVs. Where a CV fact is still unknown, the field is LEFT EMPTY and the
+// templates skip it, rather than guessing. Search for "TOFILL" for the full list.
+
+// ─── Profile ─────────────────────────────────────────────────────────────────
+
+export const PROFILE = {
+  name: 'Byron Matsikembare',
+  /** Used once on /about and in structured data. */
+  fullName: 'Byron Tashinga Matsikembare',
+  shortName: 'Byron',
+  initials: 'BM',
+  title: 'Python Full-Stack Developer',
+  eyebrow: 'Python full-stack developer · HIT Computer Science',
+  location: 'Harare, Zimbabwe',
+  email: 'matsikembareb@gmail.com',
+  /** Empty on purpose: this file is public on GitHub, so a number here is public even if never
+   *  rendered. Fill in AND set showPhone to true only if you want it on the contact page. */
+  phone: '',
+  showPhone: false,
+  bio: "I'm an IT systems developer at Die Deutsche Schule Harare, where I built and run DDSops360, the school's operations platform. I work in Flask, Django, FastAPI and React, and I'm studying Computer Science at HIT.",
+  /** Cropped from the LinkedIn profile photo, 415x533, EXIF stripped. */
+  portrait: '/images/byron-matsikembare-python-developer.webp',
+  portraitAlt: 'Byron Matsikembare, Python full-stack developer in Harare',
+  openTo: 'graduate developer roles from 2027, internships, freelance projects and business partnerships',
+  social: {
+    github: 'https://github.com/Matsikembareb',
+    linkedin: 'https://www.linkedin.com/in/byronmatsikembare',
+    email: 'mailto:matsikembareb@gmail.com',
+  },
+};
+
+// ─── Projects ────────────────────────────────────────────────────────────────
 
 export interface Project {
   slug: string;
   title: string;
+  /** H1 on the case-study page. */
+  h1: string;
   tagline: string;
-  description: string;
-  tags: string[];
-  url?: string;
-  image: string;
+  summary: string;
+  metaTitle: string;
+  metaDescription: string;
+  /** Tile colour on the homepage (Figma palette; same in both themes). */
   accent: string;
-  live: boolean;
+  /** Use dark text on this tile (light tile colours fail WCAG AA with white). */
+  tileDarkText?: boolean;
+  /** Shorter title for homepage tiles, when the full name is too long. */
+  tileTitle?: string;
+  /** One or two words under the tile title in the homepage strip. */
+  tileKind?: string;
+  /** Small meta line under a selected-work tile. */
+  tileMeta?: string;
+  status: string;
+  /** Human-readable date range, omitted when empty. */
+  period: string;
+  featured: boolean;
+  /** false = short card on /projects only, no page of its own. */
+  caseStudy: boolean;
   role: string;
-  timeline: string;
   stack: string[];
-  // Article content
-  overview: string;
-  challenge: string;
-  approach: string;
-  outcome: string;
-  features: string[];
+  /** TOFILL: live URL or repo. Nothing renders while these are empty. */
+  url?: string;
+  repo?: string;
+  blocks: { h: string; body: string }[];
+  relatedPost?: string;
 }
 
 export const PROJECTS: Project[] = [
   {
-    slug: 'chema',
-    title: 'chema.co.zw',
-    tagline: 'A digital platform serving Zimbabwean communities',
-    description: 'A platform built to serve Zimbabwean communities — connecting people, services, and opportunities through a clean, accessible web experience designed for local context.',
-    tags: ['Web App', 'Full Stack', 'Zimbabwe'],
-    url: 'https://chema.co.zw',
-    image: 'https://images.pexels.com/photos/35752214/pexels-photo-35752214.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    accent: '#00b4d8',
-    live: true,
-    role: 'Full-Stack Developer',
-    timeline: '2024',
-    stack: ['Python', 'Flask', 'JavaScript', 'MySQL', 'Jinja2'],
-    overview: 'chema.co.zw is a community-driven digital platform built specifically for the Zimbabwean market. It was designed to bridge the gap between people, services, and opportunities by providing a centralized, accessible web experience that speaks to local needs and local context.',
-    challenge: 'Zimbabwean internet users often struggle with fragmented online services — information is scattered across social media, WhatsApp groups, and outdated websites. The challenge was to build a single platform that could consolidate community-relevant services while remaining fast, accessible on low-bandwidth connections, and easy to navigate for non-technical users.',
-    approach: 'We adopted a Flask-based backend with a server-rendered frontend using Jinja2 templates, prioritizing quick page loads and SEO-friendly structure. MySQL was chosen for relational data integrity. The UI was designed mobile-first, given that the vast majority of Zimbabwean users access the web through smartphones. Special attention was paid to keeping bundle sizes small and leveraging progressive enhancement so the site remained usable even on slower connections.',
-    outcome: 'The platform launched and is now live at chema.co.zw, serving as a digital hub for community interaction. The architecture has proven stable under real traffic, and the modular codebase allows for rapid iteration based on user feedback.',
-    features: [
-      'Mobile-first responsive design optimized for low-bandwidth access',
-      'Server-rendered pages for fast initial load and SEO visibility',
-      'Modular Flask backend with clean separation of concerns',
-      'MySQL relational schema supporting community data models',
-      'Accessible UI following WCAG principles for inclusive use',
-    ],
-  },
-  {
-    slug: 'livestreaming',
-    title: 'livestreaming.co.zw',
-    tagline: 'Real-time media delivery for the Zimbabwean market',
-    description: 'A live streaming platform tailored for Zimbabwe, enabling real-time content delivery and audience engagement at scale across low-bandwidth conditions.',
-    tags: ['Streaming', 'Real-time', 'Media'],
-    url: 'https://livestreaming.co.zw',
-    image: 'https://images.pexels.com/photos/7865064/pexels-photo-7865064.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    accent: '#e63946',
-    live: true,
-    role: 'Backend & Streaming Developer',
-    timeline: '2024',
-    stack: ['Python', 'Flask', 'JavaScript', 'WebSockets', 'MySQL'],
-    overview: 'livestreaming.co.zw is a real-time media platform engineered to bring live streaming capability to the Zimbabwean market. It enables broadcasters and content creators to reach audiences with minimal latency, even in network-constrained environments.',
-    challenge: 'Live streaming in Zimbabwe presents a unique set of technical hurdles. Mobile data is expensive, connections are often unstable, and users switch between Wi-Fi and cellular frequently. The platform needed to deliver smooth real-time video while gracefully degrading on poor connections, without forcing users to install native apps.',
-    approach: 'The system uses a Flask backend with WebSocket support for real-time signaling and chat, paired with adaptive bitrate streaming to adjust quality dynamically based on the viewer\'s available bandwidth. We implemented reconnection logic so streams automatically resume after network drops. The frontend was built as a lightweight web application, avoiding heavy frameworks to keep the client footprint small — critical for users on metered data plans.',
-    outcome: 'livestreaming.co.zw is live and operational, supporting real-time broadcasts with interactive audience features. The adaptive streaming approach has been key to maintaining a usable experience across Zimbabwe\'s varied network conditions.',
-    features: [
-      'Adaptive bitrate streaming for graceful quality adjustment',
-      'WebSocket-based real-time chat and audience interaction',
-      'Automatic reconnection after network interruptions',
-      'Lightweight web client — no app install required',
-      'Broadcaster dashboard for stream management and monitoring',
-    ],
-  },
-  {
-    slug: 'muzukuru',
-    title: 'Muzukuru',
-    tagline: 'Bridging technology and Zimbabwean heritage',
-    description: 'A culturally grounded digital product built with local context in mind — bridging technology and heritage to create meaningful digital experiences for Zimbabwean users.',
-    tags: ['Web App', 'Culture', 'Community'],
-    image: 'https://images.pexels.com/photos/36585992/pexels-photo-36585992.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    accent: '#f4a261',
-    live: true,
-    role: 'Full-Stack Developer',
-    timeline: '2023–2024',
-    stack: ['Python', 'Flask', 'JavaScript', 'MySQL', 'Jinja2'],
-    overview: 'Muzukuru is a digital product that sits at the intersection of technology and Zimbabwean cultural heritage. It was built to prove that locally relevant, culturally grounded software can be just as polished and capable as anything built for a global audience.',
-    challenge: 'Too often, software built for African markets is a retrofit of solutions designed elsewhere. Muzukuru\'s challenge was the opposite — to start from Zimbabwean context and build outward, ensuring every design decision respected cultural nuance while still delivering a modern, performant web experience.',
-    approach: 'The project was built with a Flask backend and Jinja2 templating, with content structures designed around how Zimbabwean communities actually organize and share information — not imposed structures from Western social platforms. The frontend emphasizes warmth and accessibility, with a color palette and typography that feel culturally resonant. We kept the codebase intentionally lean, focusing on the features that mattered most to real users rather than chasing feature parity with global platforms.',
-    outcome: 'Muzukuru is live and serves as a demonstration that culturally grounded software can be technically excellent. The project reinforced a core principle: building for local context is not a limitation — it is an advantage.',
-    features: [
-      'Culturally resonant UI designed from Zimbabwean context outward',
-      'Content structures modeled on real community information flow',
-      'Lean Flask + Jinja2 architecture for fast iteration',
-      'Mobile-first design for smartphone-dominant user base',
-      'Community-driven feature prioritization based on real feedback',
+    slug: 'flask-setup',
+    title: 'Flask-Setup',
+    h1: 'Flask-Setup: a reusable Flask starter, open sourced',
+    tagline: 'Skip the boilerplate, start with the structure',
+    summary:
+      'An open-source Flask app-factory starter: blueprints, config, migrations, health checks, logging, tests and Docker, wired up and ready.',
+    metaTitle: 'Flask-Setup: Open-Source Flask Starter – Case Study',
+    metaDescription:
+      'My open-source Flask app-factory starter: blueprints, config, migrations, health checks, logging, tests and Docker, with no circular imports.',
+    accent: '#0f766e',
+    tileKind: 'Open-source starter',
+    tileMeta: 'Flask · Docker · Open source',
+    status: 'Open source',
+    period: 'Jun – Sept 2026',
+    featured: true,
+    caseStudy: true,
+    role: 'Sole author and maintainer',
+    stack: ['Python', 'Flask', 'Docker'],
+    repo: 'https://github.com/Matsikembareb/flask-setup',
+    relatedPost: 'flask-vs-django-vs-fastapi',
+    blocks: [
+      {
+        h: 'The problem',
+        body: 'Every new Flask project starts the same way: wire up the app factory, settle the config, add migrations, work out why the imports have gone circular. I had written that same scaffolding enough times to want it once, properly.',
+      },
+      {
+        h: 'What it gives you',
+        body: 'An app-factory layout with blueprints, config management across environments, database setup with migrations, health-check endpoints, structured error handling and logging, a test suite, and a Dockerfile. The structure is arranged so the circular-import problem does not arise in the first place.',
+      },
+      {
+        h: 'Why open source it',
+        body: 'The setup is not specific to anything I am building, so there was no reason to keep it private. It is on GitHub and open to contributors.',
+      },
     ],
   },
   {
     slug: 'mypowervision',
     title: 'myPowervision',
-    tagline: 'Company operations management web application',
-    description: 'A company operations web app enabling efficient management of daily jobs and schedules. Built with Flask Python, focused on a clean and intuitive UX for operational staff.',
-    tags: ['Flask', 'Python', 'Operations'],
-    image: 'https://images.pexels.com/photos/34803983/pexels-photo-34803983.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    accent: '#2ec4b6',
-    live: false,
-    role: 'Full-Stack Developer',
-    timeline: '2023',
-    stack: ['Python', 'Flask', 'MySQL', 'SQLAlchemy', 'Jinja2'],
-    overview: 'myPowervision is an internal operations web application built for a company that needed a better way to manage daily jobs and staff schedules. It replaced a mix of spreadsheets and paper-based tracking with a centralized, purpose-built system.',
-    challenge: 'The company\'s existing workflow relied on spreadsheets and manual coordination, which led to scheduling conflicts, lost job records, and time wasted on repetitive data entry. Staff were not highly technical, so the replacement system had to be immediately intuitive — no training manual required.',
-    approach: 'I built the application with Flask and SQLAlchemy on top of a MySQL database, designing a normalized schema that cleanly modeled jobs, staff, schedules, and status transitions. The UI was designed around the actual daily workflow of operational staff — the first screen they see is today\'s jobs, with one-click status updates. I used Jinja2 for server-rendered templates to keep the application fast and avoid the overhead of a client-side framework for what was fundamentally an internal tool.',
-    outcome: 'myPowervision eliminated the spreadsheet chaos and gave staff a single source of truth for daily operations. Job status updates that previously required phone calls and manual sync now happen with a single click, and scheduling conflicts are caught before they happen.',
-    features: [
-      'Daily job dashboard with one-click status updates',
-      'Staff scheduling with conflict detection',
-      'SQLAlchemy ORM with a normalized MySQL schema',
-      'Role-based access for operational staff and administrators',
-      'Job history and audit trail for accountability',
+    h1: 'myPowervision: a Flask app for daily jobs and schedules',
+    tagline: 'Daily jobs and schedules, in one place',
+    summary:
+      'A web app built to help a team manage daily jobs and schedules. Built in Python and Flask during my IT internship at Powervision; not deployed.',
+    metaTitle: 'myPowervision: Flask Job Scheduling Web App – Case Study',
+    metaDescription:
+      'How I built myPowervision, a Python Flask web app for planning a team’s daily jobs and schedules, with a clean, simple interface.',
+    accent: '#1e5eff',
+    tileKind: 'Flask web app',
+    tileMeta: 'Flask · Powervision internship',
+    // Byron, 10 Nov 2026: never deployed. Don't describe it as used by staff.
+    status: 'Internship build, not deployed',
+    period: 'Sept – Oct 2025',
+    featured: true,
+    caseStudy: true,
+    role: 'Developer, during my IT internship at Powervision',
+    stack: ['Python', 'Flask', 'Jinja', 'Bootstrap'],
+    // No url/repo: Powervision's internal tool (Byron, 10 Nov 2026). Screenshots are the proof here.
+    relatedPost: 'flask-vs-django-vs-fastapi',
+    blocks: [
+      {
+        h: 'What I built',
+        body: 'myPowervision is a Flask job scheduling app: a web app for managing a team’s daily jobs and schedules, designed to be clean and simple to use, so staff could see the day at a glance instead of piecing it together.',
+      },
+      {
+        h: 'Why Flask',
+        body: 'Flask was the framework I knew best at the time. With Jinja templates the whole app is server-rendered, with no front-end build step. If I started again today, I’d split it into a FastAPI back end and a React front end.',
+      },
+      {
+        h: 'My role',
+        body: 'I built the application during my IT internship at Powervision. It was not deployed.',
+      },
     ],
   },
   {
     slug: 'pricepick',
     title: 'PricePick',
-    tagline: 'Collaborative deal aggregator with web scraping',
-    description: 'A collaborative web scraping deal aggregator built with Python, helping users automatically find the best prices across multiple online retailers.',
-    tags: ['Python', 'Web Scraping', 'E-commerce'],
-    image: 'https://images.pexels.com/photos/4498152/pexels-photo-4498152.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    accent: '#8338ec',
-    live: false,
-    role: 'Backend Developer',
-    timeline: '2023',
-    stack: ['Python', 'BeautifulSoup', 'Requests', 'Flask'],
-    overview: 'PricePick is a collaborative project that aggregates product prices from multiple online retailers using automated web scraping, then presents the best deals to users in a single, searchable interface.',
-    challenge: 'Online shoppers routinely waste time checking multiple retailers to find the best price. PricePick was built to automate that comparison — but web scraping at scale introduces real challenges: inconsistent HTML structures across sites, rate limiting, and data that goes stale quickly.',
-    approach: 'We built modular Python scrapers using BeautifulSoup and Requests, with each retailer getting a dedicated parser adapter that handled that site\'s specific DOM structure. A Flask API served the aggregated data, and a scheduled refresh pipeline kept prices current. We designed the scraper layer to be easily extensible — adding a new retailer meant writing one new adapter, not reworking the pipeline.',
-    outcome: 'PricePick successfully aggregated pricing across multiple retailers and proved out the modular scraper architecture. The project was a strong learning exercise in resilient web scraping, API design, and handling inconsistent real-world data.',
-    features: [
-      'Modular scraper architecture — one adapter per retailer',
-      'Scheduled price refresh pipeline for current data',
-      'Flask API serving aggregated pricing data',
-      'Searchable interface for deal discovery',
-      'Extensible design for rapid onboarding of new retailers',
+    h1: 'PricePick: a Python web scraping deal aggregator',
+    tagline: 'A deal aggregator, and the business plan behind it',
+    summary:
+      'A group Flask project that scrapes deals from online shops into one place. I wrote its business model and plan, the documentation and the demo site.',
+    metaTitle: 'PricePick: Python Web Scraping Deal Aggregator – Case Study',
+    metaDescription:
+      'PricePick is a group Python web scraping project. I wrote its business model and plan and the documentation, and built the demo site.',
+    accent: '#f97316',
+    tileKind: 'Deal aggregator',
+    tileMeta: 'Business plan · Group project',
+    tileDarkText: true,
+    status: 'Group project',
+    period: 'Sept 2024 – May 2025',
+    featured: true,
+    caseStudy: true,
+    // Byron, 10 Nov 2026: most of the code was his teammates'. His part was the business side.
+    role: 'Team member with Percy and John: business model and plan, documentation, presenting and the demo site',
+    stack: ['Python', 'Flask'],
+    // No url/repo: nothing public exists (Byron, 10 Nov 2026).
+    blocks: [
+      {
+        h: 'What it is',
+        body: 'PricePick is a Python web scraping project: a Flask web app that scrapes deals from online shops and gathers them in one place, so shoppers can compare prices without opening a dozen tabs. It was a group project at HIT with Percy and John.',
+      },
+      {
+        h: 'My part',
+        body: 'Most of the code was my teammates’ work. My side was the business: I used PricePick as the basis for the business model and business plan in our Technopreneurship course, wrote the project documentation and presented it. I also built a sample website for the scraping demo.',
+      },
+      {
+        h: 'What I learned',
+        body: 'Turning an idea and working code into money is not easy. The plan meant simulating how PricePick would perform in the real world, both financially and in demand.',
+      },
+    ],
+  },
+  {
+    slug: 'cogniadapt',
+    title: 'CogniAdapt',
+    h1: 'CogniAdapt',
+    tagline: 'An education platform that maps how a subject’s concepts depend on each other, so students fill gaps from the roots. Built with FastAPI for a Microsoft competition.',
+    summary:
+      'An education platform that maps how a subject’s fundamental and new concepts depend on each other, and structures learning around those links so students fill gaps from the roots.',
+    metaTitle: 'CogniAdapt',
+    metaDescription: 'CogniAdapt, an education platform by Byron Matsikembare that maps concept dependencies to fill learning gaps from the roots. Built with FastAPI.',
+    accent: '#0369a1',
+    tileKind: 'Education platform',
+    tileMeta: 'FastAPI · Microsoft competition',
+    status: 'Competition entry',
+    period: '',
+    featured: false,
+    caseStudy: false,
+    role: '',
+    stack: ['FastAPI'],
+    // Byron, 10 Nov 2026: what it does. TOFILL: dates, outcome, link.
+    blocks: [],
+  },
+  {
+    slug: 'scheduleflow',
+    title: 'ScheduleFlow',
+    h1: 'ScheduleFlow',
+    tagline: 'A task management mobile app, built in Java as a course assignment',
+    summary: 'A task management mobile app, built in Java as a course assignment.',
+    metaTitle: 'ScheduleFlow',
+    metaDescription: 'ScheduleFlow, a task management mobile app built in Java by Byron Matsikembare.',
+    accent: '#7c3aed',
+    tileKind: 'Mobile app',
+    tileMeta: 'Java · Course assignment',
+    status: 'Course assignment',
+    period: '',
+    featured: false,
+    caseStudy: false,
+    role: '',
+    stack: ['Java'],
+    repo: 'https://github.com/Matsikembareb/Schedule-Flow',
+    blocks: [],
+  },
+  {
+    slug: 'word-evangelism-ministries',
+    title: 'Word Evangelism Ministries',
+    h1: 'Word Evangelism Ministries',
+    tagline: 'A publicity website for a ministry',
+    summary: 'A publicity website for Word Evangelism Ministries.',
+    metaTitle: 'Word Evangelism Ministries',
+    metaDescription: 'A publicity website built by Byron Matsikembare.',
+    accent: '#7c3aed',
+    tileTitle: 'Word Evangelism',
+    // No url: no public link exists (Byron, 10 Nov 2026).
+    tileKind: 'Website',
+    tileMeta: 'Website',
+    status: 'Website',
+    featured: false,
+    caseStudy: false,
+    role: '',
+    stack: [],
+    blocks: [],
+  },
+];
+
+// ─── Home page proof strip ───────────────────────────────────────────────────
+// Defined after PROJECTS so the count is derived, never hand-maintained.
+
+export const PROOF = [
+  { k: '21', v: 'A-Level points, 5 subjects' },
+  { k: '1', v: 'Production system, live' },
+  { k: String(PROJECTS.length), v: 'Projects, web & mobile' },
+  { k: '2', v: 'Languages: Shona & English' },
+];
+
+// ─── Experience ──────────────────────────────────────────────────────────────
+
+export interface Role {
+  title: string;
+  org: string;
+  /** TOFILL for both internships: real start and end dates. Omitted while empty. */
+  period: string;
+  current: boolean;
+  bullets: string[];
+}
+
+export const EXPERIENCE: Role[] = [
+  {
+    title: 'IT Systems Developer',
+    org: 'Die Deutsche Schule Harare',
+    period: 'Sept 2026 – present',
+    current: true,
+    bullets: [
+      "Built and run DDSops360, the school's operations platform, live in production across its Harare and Bulawayo campuses.",
+      'Designed a 14-module Flask and SQLAlchemy backend with a React, Vite and TanStack Query front end, covering enrolment, classes, library lending, staff, reporting and campus access.',
+      'Implemented QR badge verification for event and gate scanning, with role-based accounts so security staff get scan-only access.',
+      'Automated student ID and library card generation as print-ready PDFs, replacing a manual process.',
+      'Set up continuous integration with GitHub Actions, containerised the stack with Docker and scheduled nightly off-site backups.',
+    ],
+  },
+  {
+    title: 'Developer',
+    org: 'Muzukuru Streaming',
+    period: 'June 2026 – Aug 2026',
+    current: false,
+    bullets: [
+      'Engineered responsive image galleries, administrative moderation queues and interactive data tables across client and management portals.',
+      'Implemented client-side WebP compression and resolved live-stream comment buffering bottlenecks, cutting storage use and speeding up page loads.',
+      'Designed full-stack issue-tracking modules with priority tagging, automated status alerts, pagination and multi-state filtering.',
+      'Integrated automated workflow agents and customer communication tooling with threshold-based escalation pathways.',
+      'Hardened cross-platform media upload pipelines, patched cross-browser rendering bugs and built input validation for user onboarding flows.',
+      'Led a team training session on integrating AI agents into the Tawk customer-communication platform.',
+    ],
+  },
+  {
+    title: 'Information Technology Intern',
+    org: 'Powervision (Private) Limited',
+    period: 'July 2025 – June 2026',
+    current: false,
+    bullets: [
+      'Built myPowervision, a Python Flask prototype for managing daily jobs and schedules through a clean, simple interface.',
+      'Engineered and maintained internal web applications, building responsive user interfaces and secure RESTful backend services.',
+      'Developed automated scripts and data workflows to streamline daily operations and remove manual reporting bottlenecks.',
+      'Implemented automated data tracking and formula-driven dashboard tools to improve operational visibility across teams.',
+      'Normalised database schemas and implemented role-based access control in Flask and SQLAlchemy, with migrations and tests.',
+      'Monitored server health, network systems and branch hardware to maximise uptime, and supported staff with day-to-day IT issues.',
     ],
   },
 ];
 
-// ─── Skills (no percentages, categorized) ────────────────────────────────────
+export const LEADERSHIP = [
+  { role: 'Chairperson', org: 'CoDe Youth Advisory Committee', period: 'May 2026 – present', focus: 'A study of delivering sexual and reproductive health services through collection lockers: people submit tests, request and receive results, and collect pills and condoms, using a web app, WhatsApp chat and payments.' },
+  { role: 'Secretary', org: 'SAYWHAT', period: '', focus: 'Student sexual and reproductive health advocacy' },
+  { role: 'Counsellor', org: 'Friendship Bench', period: '', focus: 'Student mental health: active listening and strict confidentiality' },
+  { role: 'Peer Educator', org: 'O3 Plus', period: '', focus: 'Student welfare: turning complex topics into plain language' },
+  { role: 'Member', org: 'Enactus', period: 'April 2026 – present', focus: 'Entrepreneurship for community impact' },
+];
 
-export const SKILLS = {
-  strong: [
-    { name: 'Python', note: 'Primary language — Flask apps, scraping, automation' },
-    { name: 'Flask', note: 'Server-rendered full-stack applications' },
-    { name: 'Jinja2', note: 'Templating for server-rendered pages' },
-    { name: 'JavaScript', note: 'Frontend interactivity and client logic' },
-    { name: 'HTML & CSS', note: 'Responsive, accessible markup' },
-    { name: 'MySQL', note: 'Relational database design and queries' },
-  ],
-  other: [
-    { name: 'React' },
-    { name: 'TypeScript' },
-    { name: 'MongoDB' },
-    { name: 'SQLAlchemy' },
-    { name: 'Tailwind CSS' },
-    { name: 'Git & GitHub' },
-    { name: 'Postman' },
-    { name: 'Anaconda' },
-    { name: 'VS Code' },
-  ],
-  soft: [
-    { name: 'Problem Solving', note: 'Breaking complex requirements into shippable steps' },
-    { name: 'Communication', note: 'Translating technical concepts for non-technical stakeholders' },
-    { name: 'Teamwork', note: 'Collaborative development across multi-person projects' },
-    { name: 'Adaptability', note: 'Learning new tools and frameworks as projects demand' },
-    { name: 'Time Management', note: 'Balancing studies with real-world project delivery' },
-    { name: 'Mentorship', note: 'Supporting peers and community through counselling roles' },
-  ],
-};
-
-// ─── Education (academic only) ───────────────────────────────────────────────
+// ─── Education ───────────────────────────────────────────────────────────────
 
 export const EDUCATION = [
   {
-    degree: 'Bachelor of Technology (Honours) in Computer Science',
+    qualification: 'BTech (Honours) Computer Science',
     institution: 'Harare Institute of Technology',
-    location: 'Harare, Zimbabwe',
-    period: 'Aug 2023 – Present',
+    location: 'Harare',
+    dates: 'Aug 2023 – 2027 (expected)',
+    result: 'In progress',
     current: true,
   },
   {
-    degree: 'Advanced Level — 21 Points in 5 Subjects',
+    qualification: 'ZIMSEC Advanced Level',
     institution: "St Faith's High School",
     location: 'Zimbabwe',
-    period: 'Jan 2021 – Dec 2022',
+    dates: 'Jan 2021 – Dec 2022',
+    result:
+      '21 points: Computer Science A, Mechanical Mathematics A, Physics B, Chemistry B, Pure Mathematics C',
     current: false,
   },
   {
-    degree: 'Ordinary Level — 8 As, 7 Bs',
+    qualification: 'ZIMSEC Ordinary Level',
     institution: 'Kriste Mambo High School',
     location: 'Zimbabwe',
-    period: 'Jan 2017 – Dec 2020',
+    dates: 'Jan 2017 – Dec 2020',
+    result:
+      '15 subjects: 8 As and 7 Bs, including Mathematics, English, Computer Science, Physics and Shona',
     current: false,
   },
 ];
 
-// ─── Qualifications & Certifications (separate from education) ───────────────
+export interface Certification {
+  title: string;
+  issuer: string;
+  focus: string;
+  year: string;
+  /** Individual course completions rolled up under one entry. */
+  courses?: { name: string; date: string; id: string }[];
+}
 
-export const CERTIFICATIONS = [
+export const CERTIFICATIONS: Certification[] = [
+  // Newest first. Dates and grades are from the certificates themselves (read 10 Nov 2026).
+  { title: 'Data Science (GCI World)', issuer: 'Matsuo-Iwasawa Lab, University of Tokyo', focus: 'Fundamental theories and implementations of data science, final assessment passed', year: 'Aug 2026' },
   {
-    title: 'Frontend Masters Bootcamp',
-    issuer: 'Frontend Masters',
-    description: 'Intensive bootcamp covering modern frontend development — React, JavaScript fundamentals, and production UI patterns.',
+    title: 'Web development fundamentals (9 courses)',
+    // Certificates (Jan–Mar 2026) are branded Frontend Masters; the company has since renamed itself Master.dev.
+    issuer: 'Master.dev (formerly Frontend Masters)',
+    focus: 'HTML, CSS and JavaScript, with build projects',
+    year: 'Jan – Mar 2026',
+    courses: [
+      { name: 'Build a Game Project: Feed-A-Star-Mole', date: 'Mar 2026', id: '26afa05f21-QdGEMgizVR' },
+      { name: 'Using JavaScript in Websites (AJAX, APIs, animations)', date: 'Mar 2026', id: '26afa05f21-WpPAlngdeI' },
+      { name: 'Calculator Project: JavaScript', date: 'Feb 2026', id: '26afa05f21-iXeiSaMaxq' },
+      { name: 'Introduction to JavaScript', date: 'Feb 2026', id: '26afa05f21-IASrfYRozE' },
+      { name: 'Calculator Project: HTML & CSS', date: 'Feb 2026', id: '26afa05f21-yKhnCBodwR' },
+      { name: 'Website Embeds & GitHub Pages', date: 'Feb 2026', id: '26afa05f21-hqghbEEeym' },
+      { name: 'HTML Forms', date: 'Feb 2026', id: '26afa05f21-nAVlQwwJcH' },
+      { name: 'Introduction to CSS', date: 'Feb 2026', id: '26afa05f21-keSvnKDtKC' },
+      { name: 'Introduction to HTML', date: 'Jan 2026', id: '26afa05f21-XLRPmOEpIa' },
+    ],
+  },
+  { title: 'Introduction to GitHub', issuer: 'GitHub Skills', focus: 'Version control and collaboration', year: '' },
+  { title: 'Sexual and Reproductive Health course', issuer: 'SAYWHAT', focus: 'Peer health education', year: 'Feb 2024' },
+  { title: 'National Foundation Certificate: Computer Operations Packages', issuer: 'HEXCO', focus: 'Office software and computer operation, graded Distinction', year: 'Apr 2021' },
+  { title: 'National Foundation Certificate: ICT Fundamentals', issuer: 'HEXCO', focus: 'ICT foundations, graded Credit', year: 'Apr 2021' },
+  { title: 'Basic Computer Appreciation Course', issuer: 'POTRAZ', focus: 'Digital literacy', year: 'Apr 2018' },
+];
+
+// ─── Skills (plain lists, never percentages) ─────────────────────────────────
+
+export const SKILLS = [
+  { area: 'Back end', items: ['Python', 'Flask', 'SQLAlchemy', 'Django', 'FastAPI', 'Jinja templating', 'REST APIs', 'RBAC'] },
+  { area: 'Front end', items: ['HTML', 'CSS', 'JavaScript', 'React', 'Bootstrap', 'Tailwind CSS'] },
+  { area: 'Databases', items: ['MySQL', 'PostgreSQL', 'SQLite', 'MongoDB', 'Alembic migrations', 'Schema design'] },
+  { area: 'Tooling and ops', items: ['Git and GitHub', 'Docker', 'GitHub Actions', 'pytest', 'Postman', 'VS Code', 'Anaconda'] },
+  { area: 'Also used', items: ['Node.js', 'Java', 'C#', 'Kotlin', 'XML'] },
+  { area: 'Learning next', items: ['React Native', 'TypeScript', 'Vue', 'Angular', 'Web scraping'] },
+];
+
+export const PEOPLE_SKILLS = [
+  'Shona: native. English: advanced professional.',
+  'Active listening and empathy, from counselling with Friendship Bench.',
+  'Explaining complex ideas simply, from peer education with O3 Plus and SAYWHAT.',
+  'Handling confidential information with care.',
+  'Working independently and meeting deadlines under pressure.',
+];
+
+// ─── Referees ────────────────────────────────────────────────────────────────
+// Contact details are deliberately absent: publishing them exposes referees to
+// spam and scams. TOFILL: `quote`, once each referee has given written permission.
+// Never write a quote on a referee's behalf.
+
+export const REFEREES = [
+  {
+    name: 'Eng. A. Ndlovu',
+    role: 'Chairperson, Computer Science Department, Harare Institute of Technology',
+    relationship: 'Academic',
+    quote: '',
   },
   {
-    title: 'Basic Computer Appreciation',
-    issuer: 'POTRAZ',
-    description: 'Postal and Telecommunications Regulatory Authority of Zimbabwe certification in foundational computer skills and digital literacy.',
+    name: 'Mr O. Rubabae',
+    role: 'Business Development Manager, Powervision',
+    relationship: 'Internship',
+    quote: '',
   },
   {
-    title: 'ICT Fundamentals & Computer Operation Packages',
-    issuer: 'HEXCO',
-    description: 'Higher Education Examinations Council certification covering ICT fundamentals and standard computer operation packages.',
+    name: 'Mr Manzimani',
+    role: 'Senior Developer, Muzukuru Streaming',
+    relationship: 'Internship',
+    quote: '',
   },
 ];
 
-// ─── Clubs & Societies (separate from education) ─────────────────────────────
-
-export const CLUBS = [
-  {
-    name: 'Enactus HIT',
-    role: 'Member',
-    description: 'Business innovation through entrepreneurship — applying technology and business skills to create community impact projects.',
-  },
-  {
-    name: 'Friendship Bench',
-    role: 'Counsellor',
-    description: 'Mental health support and community counselling — providing a listening ear and bridge to professional help for those in need.',
-  },
-];
-
-// ─── Profile ─────────────────────────────────────────────────────────────────
-
-export const PROFILE = {
-  name: 'Byron Tashinga Matsikembare',
-  shortName: 'Byron',
-  initials: 'BM',
-  title: 'Full-Stack Developer',
-  location: 'Harare, Zimbabwe',
-  email: 'matsikembareb@gmail.com',
-  phone: '+263 780 812 222',
-  bio: 'Computer Science student at Harare Institute of Technology, passionate about building full-stack systems that make a real difference. I ship fast, I ship clean.',
-  portrait: 'https://images.pexels.com/photos/32071842/pexels-photo-32071842.jpeg?auto=compress&cs=tinysrgb&w=1200',
-  social: {
-    github: 'https://github.com/',
-    linkedin: 'https://www.linkedin.com/',
-    instagram: 'https://www.instagram.com/',
-    email: 'mailto:matsikembareb@gmail.com',
-  },
-};
+// ─── Navigation ──────────────────────────────────────────────────────────────
 
 export const NAV_ITEMS = [
-  { label: 'Home', page: 'home' as Page },
-  { label: 'About', page: 'about' as Page },
-  { label: 'Skills', page: 'skills' as Page },
-  { label: 'Projects', page: 'projects' as Page },
-  { label: 'Education', page: 'education' as Page },
-  { label: 'Qualifications', page: 'qualifications' as Page },
-  { label: 'Contact', page: 'contact' as Page },
+  { label: 'Work', href: '/projects' },
+  { label: 'About', href: '/about' },
+  { label: 'Experience', href: '/experience' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
 ];
 
-export type Page = 'home' | 'about' | 'skills' | 'projects' | 'project-detail' | 'education' | 'qualifications' | 'contact';
+export const FOOTER = {
+  blurb: 'Python full-stack developer and HIT Computer Science student, building practical web apps in Harare.',
+  // The design lists Work, About, Experience, Blog. Qualifications is added so it isn't orphaned.
+  pages: [
+    { label: 'Work', href: '/projects' },
+    { label: 'About', href: '/about' },
+    { label: 'Experience', href: '/experience' },
+    { label: 'Qualifications', href: '/qualifications' },
+    { label: 'Blog', href: '/blog' },
+  ],
+};
+
+// ─── Homepage copy (Figma frames 9:77 / 9:351) ───────────────────────────────
+
+export const HOME = {
+  eyebrow: 'Byron Matsikembare · Python full-stack developer',
+  headline: 'I build minimal, functional web apps with Python and React, for',
+  headlineEmphasis: 'real problems in Zimbabwe',
+  /** Not in the Figma frame: added because the current role must appear in the hero. */
+  currentRole: "IT systems developer at Die Deutsche Schule Harare, where I built and run DDSops360.",
+  availability: 'Open to roles, freelance work & business partners',
+  /** Shown only when public/cv.pdf exists. */
+  cvPath: '/cv.pdf',
+  strip: ['mypowervision', 'pricepick', 'flask-setup', 'scheduleflow'],
+  selected: ['mypowervision', 'pricepick', 'flask-setup', 'word-evangelism-ministries'],
+  // Byron, 10 Nov 2026: the services he offers, plus his goal of starting a company.
+  services: {
+    eyebrow: 'Services',
+    heading: 'From a wedding invite to a school’s operations platform',
+    items: [
+      { icon: 'globe', h: 'Websites', body: 'Fast, mobile-friendly sites for businesses, ministries and individuals.' },
+      { icon: 'blocks', h: 'Custom software', body: 'Web apps built around how you already work, like the platform I run for a school.' },
+      { icon: 'calendar-heart', h: 'Invites & voting', body: 'Web-based wedding invitations, online voting and similar sites for events.' },
+      { icon: 'lightbulb', h: 'Consulting', body: 'Advice on choosing a stack, planning a system or improving the one you have.' },
+      { icon: 'life-buoy', h: 'Project assistance', body: 'An extra pair of hands to get a software project unstuck and shipped.' },
+      { icon: 'graduation-cap', h: 'Learning support', body: 'Guidance for students learning to code, and collaboration on shared projects.' },
+      { icon: 'share-2', h: 'Free sharing', body: 'Open-source code like Flask-Setup, and lessons shared freely on this blog.' },
+      { icon: 'handshake', h: 'Partnerships', body: 'I’m working toward starting a software company, and I’m looking for business partners.' },
+    ],
+  },
+  work: { eyebrow: 'Portfolio', heading: 'Selected work' },
+  experience: { eyebrow: 'Experience', heading: 'Where I have shipped real work' },
+  blog: { eyebrow: 'Recent blog', heading: 'Notes on Python, building and student life' },
+  cta: {
+    heading: "Let's build something useful together.",
+    body: 'Have a role, a project or a business idea in mind? I\u2019d love to hear about it.',
+  },
+} as const;
+
+/** "Sept 2026 – present" → "2026 – now"; "June 2026 – Aug 2026" → "2026". */
+export function yearRange(period: string): string {
+  const years = period.match(/\d{4}/g) ?? [];
+  const open = /present|now/i.test(period);
+  if (!years.length) return period;
+  if (open) return `${years[0]} – now`;
+  return years[0] === years[years.length - 1] ? years[0] : `${years[0]} – ${years[years.length - 1]}`;
+}
