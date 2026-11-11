@@ -25,7 +25,7 @@ export const PROFILE = {
   /** Cropped from the LinkedIn profile photo, 415x533, EXIF stripped. */
   portrait: '/images/byron-matsikembare-python-developer.webp',
   portraitAlt: 'Byron Matsikembare, Python full-stack developer in Harare',
-  openTo: 'graduate developer roles from 2027, internships, freelance projects and business partnerships',
+  openTo: 'graduate developer roles from 2027 (in Zimbabwe or remote), internships, freelance projects and business partnerships',
   social: {
     github: 'https://github.com/Matsikembareb',
     linkedin: 'https://www.linkedin.com/in/byronmatsikembare',
@@ -92,6 +92,8 @@ export interface Project {
   contribute?: boolean;
   /** One line for the printed CV (src/pages/cv.astro). */
   cvLine?: string;
+  /** What the project is about, for search engines (JSON-LD `about` and `keywords`). */
+  topics?: string[];
   blocks: { h: string; body: string }[];
   relatedPost?: string;
 }
@@ -106,7 +108,12 @@ export const PROJECTS: Project[] = [
       'My HIT 400 capstone. It rebuilds family trees from medical-aid records, scores hereditary risk for heart disease, diabetes and breast cancer, and turns it into screening advice for clinicians.',
     metaTitle: 'Family Risk: HIT 400 Capstone on Hereditary Disease Risk',
     metaDescription:
-      'My HIT 400 capstone rebuilds family trees from medical-aid records and scores hereditary risk for heart disease, diabetes and breast cancer. Live demo.',
+      'Byron Matsikembare’s HIT 400 capstone: family trees rebuilt from medical-aid records to flag hereditary risk of heart disease, diabetes and breast cancer.',
+    topics: [
+      'HIT 400 capstone', 'Harare Institute of Technology', 'computer science final year project', 'hereditary disease risk',
+      'family medical history', 'pedigree reconstruction', 'medical aid records', 'clinical decision support',
+      'hypertension', 'type 2 diabetes', 'breast cancer', 'health informatics', 'Zimbabwe',
+    ],
     accent: '#2f7d5b',
     tileKind: 'HIT 400 capstone',
     tileMeta: 'Flask · React · PostgreSQL · HIT 400 capstone',
@@ -542,6 +549,8 @@ export const EDUCATION = [
     dates: 'Aug 2023 – 2027 (expected)',
     result: 'In progress',
     current: true,
+    // Byron, 11 Nov 2026: his HIT 400 capstone, linked for search engines and readers.
+    highlight: { label: 'Capstone (HIT 400): Family Risk', href: '/projects/family-risk' },
   },
   {
     qualification: 'ZIMSEC Advanced Level',
@@ -660,6 +669,7 @@ export const FOOTER = {
   // The design lists Work, About, Experience, Blog. Qualifications is added so it isn't orphaned.
   pages: [
     { label: 'Work', href: '/projects' },
+    { label: 'Services', href: '/services' },
     { label: 'About', href: '/about' },
     { label: 'Experience', href: '/experience' },
     { label: 'Qualifications', href: '/qualifications' },
@@ -675,7 +685,7 @@ export const HOME = {
   headlineEmphasis: 'real problems in Zimbabwe',
   /** Not in the Figma frame: added because the current role must appear in the hero. */
   currentRole: "IT systems developer at Die Deutsche Schule Harare, where I built and run DDSops360.",
-  availability: 'Open to roles, freelance work & business partners',
+  availability: 'Open to roles in Zimbabwe & remote, freelance work & partners',
   /** Shown only when public/cv.pdf exists. */
   cvPath: '/cv.pdf',
   /** Above the services: the live systems (LIVE_SYSTEMS), each opening the real site. */

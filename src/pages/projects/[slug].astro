@@ -37,22 +37,39 @@ const facts = [
   { label: 'Stack', value: project.stack.join(' · ') },
 ].filter((f) => f.value);
 
-const schema = {
-  '@context': 'https://schema.org',
+const pageUrl = new URL(`/projects/${project.slug}`, SITE_URL).href;
+/** 1200×630 JPG made next to each screenshot (cover.webp → cover-og.jpg): LinkedIn and WhatsApp can't show WebP. */
+const shareImage = project.image?.replace(/\.webp$/, '-og.jpg');
+const work = {
   '@type': 'CreativeWork',
   name: project.title,
   headline: project.h1,
   description: project.metaDescription,
-  url: new URL(`/projects/${project.slug}`, SITE_URL).href,
-  keywords: project.stack.join(', '),
+  url: pageUrl,
+  keywords: [...project.stack, ...(project.topics ?? [])].join(', '),
   ...(project.image || project.logo ? { image: new URL((project.image ?? project.logo)!, SITE_URL).href } : {}),
   ...(project.repo ? { codeRepository: project.repo } : {}),
+  ...(project.topics ? { about: project.topics.map((name) => ({ '@type': 'Thing', name })) } : {}),
   creator: { '@id': `${SITE_URL.replace(/\/$/, '')}/#person` },
   author: { '@type': 'Person', name: PROFILE.name },
 };
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    work,
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Projects', item: new URL('/projects', SITE_URL).href },
+        { '@type': 'ListItem', position: 3, name: project.title, item: pageUrl },
+      ],
+    },
+  ],
+};
 ---
 
-<Base metaTitle={project.metaTitle} description={project.metaDescription} jsonld={schema}>
+<Base metaTitle={project.metaTitle} description={project.metaDescription} image={shareImage} jsonld={schema}>
   <article>
     <header class="wrap pt-10 lg:pt-16">
       <a href="/projects" class="link-arrow"><Icon name="arrow-right" size={14} class="rotate-180" /> all projects</a>

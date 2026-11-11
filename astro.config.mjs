@@ -4,6 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel/serverless';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdirSync, readFileSync } from 'node:fs';
 import { SITE_URL } from './src/config.ts';
 
 /**
@@ -29,6 +30,22 @@ function withBuildNodeRuntime(adapter) {
   };
   return adapter;
 }
+
+/** Sitemap lastmod: each published post's `updated` or `date`; the homepage and /blog get the newest. */
+function postDates() {
+  const dir = new URL('./src/content/blog/', import.meta.url);
+  /** @type {Record<string, string>} */
+  const dates = {};
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+    const front = readFileSync(new URL(file, dir), 'utf8').split('---')[1] ?? '';
+    if (/^draft:\s*true/m.test(front)) continue;
+    const date = (front.match(/^updated:\s*(\S+)/m) ?? front.match(/^date:\s*(\S+)/m))?.[1];
+    if (date) dates[file.replace(/\.md$/, '')] = date;
+  }
+  return dates;
+}
+const POST_DATES = postDates();
+const NEWEST_POST = Object.values(POST_DATES).sort().at(-1);
 
 // https://astro.build/config
 export default defineConfig({
@@ -56,7 +73,18 @@ export default defineConfig({
   },
   // Noindexed pages stay out of the sitemap: /cv (print source for public/cv.pdf), the review
   // form and the reviews admin.
-  integrations: [tailwind(), sitemap({ filter: (page) => !/\/(cv|review|admin\/reviews)\/?$/.test(page) })],
+  integrations: [
+    tailwind(),
+    sitemap({
+      filter: (page) => !/\/(cv|review|admin\/reviews)\/?$/.test(page),
+      serialize(item) {
+        const path = new URL(item.url).pathname.replace(/\/$/, '');
+        const date = path.startsWith('/blog/') ? POST_DATES[path.slice(6)] : path === '' || path === '/blog' ? NEWEST_POST : undefined;
+        if (date) item.lastmod = new Date(date).toISOString();
+        return item;
+      },
+    }),
+  ],
   build: {
     inlineStylesheets: 'auto',
   },

@@ -32,10 +32,11 @@ if (metaTitle.length > 60) {
 }
 const url = new URL(`/blog/${post.slug}`, SITE_URL).href;
 const image = d.cover ?? SITE.ogImage;
+/** Share card: the cover's 1200×630 JPG twin (LinkedIn and WhatsApp can't show WebP). */
+const shareImage = d.cover?.endsWith('.webp') ? d.cover.replace(/\.webp$/, '-og.jpg') : image;
 const project = d.project ? PROJECTS.find((p) => p.slug === d.project) : undefined;
 
-const schema = {
-  '@context': 'https://schema.org',
+const posting = {
   '@type': 'BlogPosting',
   headline: metaTitle,
   description: d.description,
@@ -47,9 +48,23 @@ const schema = {
   publisher: { '@id': `${SITE_URL.replace(/\/$/, '')}/#person` },
   mainEntityOfPage: url,
 };
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    posting,
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: new URL('/blog', SITE_URL).href },
+        { '@type': 'ListItem', position: 3, name: d.title, item: url },
+      ],
+    },
+  ],
+};
 ---
 
-<Base metaTitle={metaTitle} description={d.description} image={image} ogType="article" jsonld={schema}>
+<Base metaTitle={metaTitle} description={d.description} image={shareImage} ogType="article" jsonld={schema}>
   <article class="wrap pt-10 lg:pt-16 pb-20 lg:pb-28">
     <div class="mx-auto max-w-prose">
       <a href="/blog" class="link-arrow"><Icon name="arrow-right" size={14} class="rotate-180" /> all posts</a>

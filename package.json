@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "cv": "astro build && node scripts/cv-pdf.mjs && astro build",
-    "og": "node scripts/og-image.mjs"
+    "og": "node scripts/og-image.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11",
