@@ -1,0 +1,24 @@
+---
+// A reviewer's photo, or their initials on a surface circle when they didn't add one. Decorative:
+// their name is always printed next to it.
+import { initials, type Review } from '../lib/reviews.ts';
+
+interface Props {
+  review: Review;
+  size?: number;
+  /** Admin view of a review that isn't approved yet. */
+  pending?: boolean;
+}
+const { review, size = 56, pending = false } = Astro.props;
+const src = `/api/review-photo/${review.id}${pending ? '?pending' : ''}`;
+---
+
+{
+  review.hasPhoto ? (
+    <img src={src} alt="" width={size} height={size} loading="lazy" decoding="async" class="shrink-0 rounded-full object-cover bg-surface" style={`width:${size}px;height:${size}px`} />
+  ) : (
+    <span class="shrink-0 grid place-items-center rounded-full bg-surface text-muted font-medium select-none" style={`width:${size}px;height:${size}px;font-size:${Math.round(size * 0.34)}px`} aria-hidden="true">
+      {initials(review.name)}
+    </span>
+  )
+}
