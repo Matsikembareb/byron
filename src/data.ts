@@ -76,6 +76,8 @@ export interface Project {
   beforeAfter?: { without: string[]; with: string[] };
   /** Show the "support this project" band (needs DONATE_URL in src/config.ts). */
   donate?: boolean;
+  /** One line for the printed CV (src/pages/cv.astro). */
+  cvLine?: string;
   blocks: { h: string; body: string }[];
   relatedPost?: string;
 }
@@ -115,6 +117,7 @@ export const PROJECTS: Project[] = [
       ],
     },
     donate: true,
+    cvLine: 'Open-source Flask starter: app factory, blueprints, migrations, logging, tests and Docker, ready to build on.',
     relatedPost: 'flask-vs-django-vs-fastapi',
     blocks: [
       {
@@ -194,6 +197,7 @@ export const PROJECTS: Project[] = [
     // rendered from its templates with the scraped data it ships with (it isn't deployed).
     repo: 'https://github.com/PMagombedze/HIT200API',
     repoLabel: 'View the team’s code',
+    cvLine: 'Group deal aggregator that scrapes Zimbabwean online shops. I wrote the business model and plan, the docs and the demo site.',
     logo: '/images/projects/pricepick/logo.webp',
     image: '/images/projects/pricepick/home.webp',
     imageAlt: 'PricePick home page: a product search bar, category links, shop and price filters, and a grid of headphones and other electronics scraped from Zimbabwean online shops',
@@ -222,23 +226,45 @@ export const PROJECTS: Project[] = [
   {
     slug: 'cogniadapt',
     title: 'CogniAdapt',
-    h1: 'CogniAdapt',
-    tagline: 'An education platform that maps how a subject’s concepts depend on each other, so students fill gaps from the roots. Built with FastAPI for a Microsoft competition.',
+    h1: 'CogniAdapt: an adaptive learning platform on FastAPI',
+    tagline: 'AI lessons that adapt to how each student learns',
     summary:
-      'An education platform that maps how a subject’s fundamental and new concepts depend on each other, and structures learning around those links so students fill gaps from the roots.',
-    metaTitle: 'CogniAdapt',
-    metaDescription: 'CogniAdapt, an education platform by Byron Matsikembare that maps concept dependencies to fill learning gaps from the roots. Built with FastAPI.',
-    accent: '#0369a1',
-    tileKind: 'Education platform',
+      'An AI learning platform that breaks a topic into a graph of concepts and adapts lessons for students with dyslexia, ADHD or a language barrier.',
+    metaTitle: 'CogniAdapt: AI Learning Platform on FastAPI – Case Study',
+    metaDescription:
+      'CogniAdapt maps a topic into a graph of concepts and adapts lessons for learners with dyslexia, ADHD or language barriers. I worked on its FastAPI backend.',
+    accent: '#6b21a8',
+    tileKind: 'Learning platform',
     tileMeta: 'FastAPI · Microsoft competition',
-    status: 'Competition entry',
-    period: '',
-    featured: false,
-    caseStudy: false,
-    role: '',
-    stack: ['FastAPI'],
-    // Byron, 10 Nov 2026: what it does. TOFILL: dates, outcome, link.
-    blocks: [],
+    status: 'Team project',
+    // Repos created Dec 2025; Byron's backend commits are from Jan 2026 (github.com/CogniAdapt).
+    period: 'Dec 2025 – Jan 2026',
+    featured: true,
+    caseStudy: true,
+    role: 'Backend developer, with Brendon on the backend and Vicky on the front end',
+    stack: ['Python', 'FastAPI', 'MongoDB', 'Groq', 'Azure OpenAI', 'React'],
+    // Byron, 11 Nov 2026: the code is in the CogniAdapt org. Logo from the frontend repo; the
+    // screenshot is its landing page, rendered from that repo.
+    repo: 'https://github.com/CogniAdapt',
+    cvLine: 'AI learning platform for a Microsoft competition. On its FastAPI backend I added Groq and MongoDB, falling back to Azure.',
+    logo: '/images/projects/cogniadapt/logo.webp',
+    image: '/images/projects/cogniadapt/home.webp',
+    imageAlt: 'CogniAdapt landing page: a brain mascot on a trampoline under a graduation cap, the headline "Learn Smarter, Not Harder" and buttons to start learning or watch a demo',
+    relatedPost: 'flask-vs-django-vs-fastapi',
+    blocks: [
+      {
+        h: 'What it is',
+        body: 'CogniAdapt is an AI learning platform for students with learning differences, such as dyslexia or ADHD, or a language barrier. It breaks a topic into a graph of concepts, each building on the ones before it, and adapts the lessons to the learner. When a student struggles, it steps back to repair the concept they are missing instead of repeating the same lesson. It tracks progress through the graph and can read lessons aloud. We built it for a Microsoft competition.',
+      },
+      {
+        h: 'My part',
+        body: 'I worked on the FastAPI backend. I added a second stack alongside the original Azure services: Groq for generating the concept graphs, and MongoDB for storage. Each falls back in turn, Groq to Azure OpenAI and MongoDB to Azure Cosmos DB, then to a mock mode, so the app still starts when a service or key is missing. I also did a security pass, moving secrets out of the code and writing security and deployment guides for the team.',
+      },
+      {
+        h: 'Why FastAPI',
+        body: 'The backend is mostly AI calls and database reads, so FastAPI’s async support and automatic API docs fitted well. The front end is React with Tailwind, built by Vicky.',
+      },
+    ],
   },
   {
     slug: 'scheduleflow',
@@ -295,6 +321,8 @@ export interface LiveSystem {
   url: string;
   summary: string;
   contribution: string;
+  /** EXPERIENCE org it was done under; the CV lists it on that role. */
+  org: string;
 }
 
 export const LIVE_SYSTEMS: LiveSystem[] = [
@@ -306,6 +334,7 @@ export const LIVE_SYSTEMS: LiveSystem[] = [
     summary:
       'The school’s public website: German courses and ÖSD exams, plus routes to university, apprenticeships, voluntary service and au-pair placements in Germany.',
     contribution: 'Contributed as the school’s IT systems developer.',
+    org: 'Die Deutsche Schule Harare',
   },
   {
     slug: 'muzukuru',
@@ -315,6 +344,7 @@ export const LIVE_SYSTEMS: LiveSystem[] = [
     summary:
       'Funeral and memorial livestreaming, so family who can’t travel can still be present. Streams, venues, pricing and quotes, all online.',
     contribution: 'Contributed as a developer at Muzukuru Streaming.',
+    org: 'Muzukuru Streaming',
   },
   {
     slug: 'live-streaming-company',
@@ -324,6 +354,7 @@ export const LIVE_SYSTEMS: LiveSystem[] = [
     summary:
       'Professional livestreaming for conferences, church services and public events across Zimbabwe, to watch live or on demand.',
     contribution: 'Contributed as a developer.',
+    org: 'Muzukuru Streaming',
   },
   {
     slug: 'chema',
@@ -333,6 +364,7 @@ export const LIVE_SYSTEMS: LiveSystem[] = [
     summary:
       'Zimbabwe’s community crowdfunding platform, from Muzukuru Streaming: raise money for funerals, medical bills, school fees and community projects.',
     contribution: 'Contributed as a developer at Muzukuru Streaming.',
+    org: 'Muzukuru Streaming',
   },
 ];
 
