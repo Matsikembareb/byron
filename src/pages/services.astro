@@ -1,0 +1,156 @@
+---
+// /services: what Byron builds and how to hire him, written for the searches clients and employers use
+// ("website design Zimbabwe", "software developer Harare", "hire a Python developer", remote work).
+// Every service points to real work as proof; nothing here quotes prices or clients he hasn't had.
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { PROFILE, PHONE, HOME } from '../data.ts';
+import { SITE_URL } from '../config.ts';
+
+type Proof = { label: string; href: string };
+const services: { id: string; h: string; body: string; proof: Proof[] }[] = [
+  {
+    id: 'website-design',
+    h: 'Website design and development',
+    body: 'Fast, mobile-friendly websites for businesses, churches, ministries, schools and individuals. I also set up what helps people find you on Google, like clear page titles, a sitemap and structured data, as on this site.',
+    proof: [
+      { label: 'Die Deutsche Schule website', href: 'https://deutscheschule.co.zw' },
+      { label: 'live sites I’ve worked on', href: '/projects#live' },
+    ],
+  },
+  {
+    id: 'custom-software',
+    h: 'Custom software and web apps',
+    body: 'Systems built around how you already work: records, bookings, job scheduling, dashboards and reports. I build and run the operations platform a school uses across its Harare and Bulawayo campuses.',
+    proof: [
+      { label: 'Family Risk, my HIT 400 capstone', href: '/projects/family-risk' },
+      { label: 'myPowervision', href: '/projects/mypowervision' },
+    ],
+  },
+  {
+    id: 'python-development',
+    h: 'Python, Flask, Django and FastAPI development',
+    body: 'For companies and teams hiring a developer: back ends and REST APIs, PostgreSQL and MySQL databases, React front ends, Docker, and automated tests on GitHub Actions.',
+    proof: [
+      { label: 'Flask-Setup (open source)', href: '/projects/flask-setup' },
+      { label: 'CogniAdapt (FastAPI)', href: '/projects/cogniadapt' },
+    ],
+  },
+  {
+    id: 'events',
+    h: 'Wedding invitations and online voting',
+    body: 'Web-based wedding invitations, online voting and similar sites for events: easy to share on WhatsApp, and simple for guests and voters to use on their phones.',
+    proof: [],
+  },
+  {
+    id: 'consulting',
+    h: 'IT consulting and project support',
+    body: 'Advice on choosing a stack, planning a system or improving the one you have, and an extra pair of hands to get a stuck software project finished.',
+    proof: [{ label: 'how I compare Flask, Django and FastAPI', href: '/blog/flask-vs-django-vs-fastapi' }],
+  },
+  {
+    id: 'students',
+    h: 'Support for computer science students',
+    body: 'Guidance for students learning to code, help planning projects, and collaboration on shared ones. I’m a Computer Science student at HIT myself, so I know the workload.',
+    proof: [{ label: 'my blog', href: '/blog' }],
+  },
+];
+
+const hasCv = fs.existsSync(path.join(process.cwd(), 'public', HOME.cvPath));
+const external = (href: string) => href.startsWith('http');
+const person = { '@id': `${SITE_URL.replace(/\/$/, '')}/#person` };
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    ...services.map((s) => ({
+      '@type': 'Service',
+      name: s.h,
+      description: s.body,
+      serviceType: s.h,
+      provider: person,
+      areaServed: [{ '@type': 'Country', name: 'Zimbabwe' }, 'Worldwide (remote)'],
+      url: new URL(`/services#${s.id}`, SITE_URL).href,
+    })),
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Services', item: new URL('/services', SITE_URL).href },
+      ],
+    },
+  ],
+};
+---
+
+<Base
+  metaTitle="Websites & Software Development in Zimbabwe – Hire Byron"
+  description="Hire Byron Matsikembare, a software and web developer in Harare: website design, custom software and Python apps, for clients in Zimbabwe and remote."
+  jsonld={schema}
+>
+  <PageHeader
+    eyebrow="Services"
+    title="Websites and software, built in Zimbabwe for clients anywhere"
+    subtitle="I'm a software and web developer in Harare and a Computer Science student at HIT. I build websites, custom systems and Python web apps, in person in Harare or remotely for clients and teams anywhere."
+  />
+
+  <section class="wrap pb-16 lg:pb-24" aria-label="What I build">
+    <ul class="border-t border-line">
+      {services.map((s) => (
+        <li id={s.id} class="grid md:grid-cols-[minmax(0,1fr)_1.4fr] gap-x-14 gap-y-3 py-10 border-b border-line scroll-mt-32">
+          <h2 class="text-[24px] lg:text-[28px] leading-snug font-normal text-ink">{s.h}</h2>
+          <div>
+            <p class="text-[17px] leading-[1.7] text-ink">{s.body}</p>
+            {s.proof.length > 0 && (
+              <p class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-muted">
+                <span>See:</span>
+                {s.proof.map((p) => (
+                  <a href={p.href} target={external(p.href) ? '_blank' : undefined} rel={external(p.href) ? 'noopener noreferrer' : undefined} class="link-arrow">
+                    {p.label} <Icon name={external(p.href) ? 'arrow-up-right' : 'arrow-right'} size={14} />
+                  </a>
+                ))}
+              </p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="bg-surface">
+    <div class="wrap py-16 lg:py-24 grid lg:grid-cols-2 gap-14 lg:gap-24">
+      <div>
+        <p class="eyebrow">Hiring for a role?</p>
+        <h2 class="mt-4 text-[26px] lg:text-[32px] leading-snug font-normal text-ink">Open to roles in Zimbabwe and remote work abroad</h2>
+        <p class="mt-5 text-[17px] leading-[1.7] text-ink">
+          I'm open to {PROFILE.openTo}. Today I'm an IT systems developer at Die Deutsche Schule Harare,
+          after developer internships at Powervision and Muzukuru Streaming.
+        </p>
+        <p class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+          <a href="/experience" class="link-arrow">experience <Icon name="arrow-right" size={14} /></a>
+          <a href="/qualifications" class="link-arrow">qualifications <Icon name="arrow-right" size={14} /></a>
+          {hasCv && <a href={HOME.cvPath} class="link-arrow" download>download my CV <Icon name="download" size={14} /></a>}
+        </p>
+      </div>
+      <div>
+        <p class="eyebrow">How I work</p>
+        <ul class="mt-5 space-y-4 text-[17px] leading-[1.7] text-ink">
+          <li class="flex gap-3"><Icon name="map-pin" size={20} class="mt-1 shrink-0 text-accent" /> Based in Harare. I meet clients in person here and work remotely with anyone else (Central Africa Time, UTC+2).</li>
+          <li class="flex gap-3"><Icon name="message-circle" size={20} class="mt-1 shrink-0 text-accent" /> We talk on WhatsApp, by email or on a video call, whichever suits you.</li>
+          <li class="flex gap-3"><Icon name="layers" size={20} class="mt-1 shrink-0 text-accent" /> Python and Flask, Django or FastAPI on the back end, React on the front end, and a database that fits.</li>
+        </ul>
+        {PROFILE.showPhone && PROFILE.phone && (
+          <p class="mt-8 flex flex-wrap gap-3">
+            <a href="/contact" class="btn btn-primary">Tell me about your project <Icon name="arrow-right" size={16} /></a>
+            {PROFILE.whatsapp && <a href={PHONE.whatsapp} target="_blank" rel="noopener noreferrer" class="btn btn-outline"><Icon name="message-circle" size={16} /> WhatsApp me</a>}
+          </p>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>

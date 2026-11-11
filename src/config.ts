@@ -22,12 +22,12 @@ export const CONTACT_FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 export const DONATE_URL = '';
 
 export const SITE = {
-  title: 'Byron Matsikembare – Python Full-Stack Developer, Harare',
+  title: 'Byron Matsikembare – Software & Web Developer, Zimbabwe',
   shortTitle: 'Byron Matsikembare',
   description:
-    'Byron Matsikembare is a Python developer in Harare, Zimbabwe, building websites, custom software and web apps with Flask and React.',
+    'Software and web developer in Harare, Zimbabwe, and HIT Computer Science student: websites, custom software and Python apps for clients here and abroad.',
   ogImage: '/og.jpg',
   locale: 'en',
   keywords:
-    'Byron Matsikembare, Python developer Harare, Python full-stack developer, Flask developer Zimbabwe, web developer Harare, website design Zimbabwe, custom software Zimbabwe, wedding invitation website, online voting system, React developer Harare, Harare Institute of Technology',
+    'Byron Matsikembare, software developer Zimbabwe, web developer Harare, website design Zimbabwe, website designer Harare, custom software Zimbabwe, Python developer Zimbabwe, Flask developer, Django developer, remote software developer Africa, computer science student Zimbabwe, Harare Institute of Technology, wedding invitation website, online voting system',
 };

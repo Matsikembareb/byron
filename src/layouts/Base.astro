@@ -40,7 +40,10 @@ const personId = `${SITE_URL.replace(/\/$/, '')}/#person`;
 const currentJob = EXPERIENCE.find((r) => r.current);
 const offers = HOME.services.items
   .filter((s) => !['Free sharing', 'Partnerships'].includes(s.h))
-  .map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.h, description: s.body } }));
+  .map((s) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Service', name: s.h, description: s.body, areaServed: [{ '@type': 'Country', name: 'Zimbabwe' }, 'Worldwide (remote)'] },
+  }));
 
 // Phone included only while PROFILE.showPhone is on (data.ts).
 const siteSchema = {
@@ -66,9 +69,17 @@ const siteSchema = {
         { '@type': 'HighSchool', name: 'Kriste Mambo High School' },
       ],
       knowsAbout: [
-        'Python', 'Flask', 'Django', 'FastAPI', 'React', 'MySQL', 'PostgreSQL', 'MongoDB',
-        'Web development', 'Custom software development',
+        'Computer science', 'Software development', 'Full-stack web development', 'Website design', 'Web development',
+        'Custom software development', 'Python', 'Flask', 'Django', 'FastAPI', 'React', 'TypeScript', 'REST APIs',
+        'MySQL', 'PostgreSQL', 'MongoDB', 'Docker', 'Health informatics',
       ],
+      hasOccupation: {
+        '@type': 'Occupation',
+        name: 'Software developer',
+        alternateName: ['Web developer', 'Python developer', 'Full-stack developer'],
+        occupationLocation: [{ '@type': 'City', name: 'Harare' }, { '@type': 'Country', name: 'Zimbabwe' }],
+        skills: 'Python, Flask, Django, FastAPI, React, TypeScript, PostgreSQL, MySQL, Docker, website design',
+      },
       // The homepage services, as offers. "Free sharing" and "Partnerships" aren't services, so they're left out.
       makesOffer: offers,
       knowsLanguage: ['sn', 'en'],
