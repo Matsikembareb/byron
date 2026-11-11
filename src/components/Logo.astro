@@ -1,0 +1,22 @@
+---
+// A tech logo (see src/lib/logos.ts), inlined at build time in currentColor. Decorative.
+import { LOGOS, type LogoName } from '../lib/logos.ts';
+
+interface Props {
+  name: LogoName;
+  size?: number;
+  class?: string;
+}
+const { name, size = 32, class: klass } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  class={klass}
+  aria-hidden="true"
+  focusable="false"><path d={LOGOS[name]} /></svg
+>

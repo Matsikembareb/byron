@@ -18,6 +18,8 @@ const categories = (Object.keys(CATEGORY_META) as (keyof typeof CATEGORY_META)[]
 // "From LinkedIn": official embeds first, then posts that started on LinkedIn — three newest.
 const embeds = [...LINKEDIN_POSTS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 const fromLinkedIn = posts.filter((p) => p.data.source === 'linkedin').slice(0, Math.max(0, 3 - embeds.length));
+// Every embed tile gets the shortest post's height, so the row lines up; taller posts fade out.
+const embedTile = Math.min(...embeds.map((e) => e.height ?? 600));
 ---
 
 <Base
@@ -63,7 +65,7 @@ const fromLinkedIn = posts.filter((p) => p.data.source === 'linkedin').slice(0, 
           </a>
         </div>
         <div class="mt-10 grid grid-cols-[repeat(auto-fill,minmax(0,320px))] justify-between gap-x-10 gap-y-12 items-start">
-          {embeds.map((e) => <LinkedInPost embed={e.embed} title={e.title} height={e.height} url={e.url} />)}
+          {embeds.map((e) => <LinkedInPost embed={e.embed} title={e.title} height={e.height} url={e.url} clip={embedTile} />)}
           {fromLinkedIn.map((post) => <PostCard post={post} withDate tall />)}
         </div>
       </div>

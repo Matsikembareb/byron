@@ -1,9 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import ReviewAvatar from '../components/ReviewAvatar.astro';
 import { REFEREES, PROFILE } from '../data.ts';
+import { listReviews } from '../lib/reviews.ts';
+
+// Rendered per request (cached for a minute), so a review shows up soon after it's approved.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=600');
 
 const withQuotes = REFEREES.filter((r) => r.quote);
+const reviews = await listReviews('approved').catch((err) => {
+  console.error('Could not load reviews', err);
+  return [];
+});
 ---
 
 <Base
@@ -24,7 +35,30 @@ const withQuotes = REFEREES.filter((r) => r.quote);
     </p>
   </section>
 
+  {reviews.length > 0 && (
+    <section class="wrap pb-16 lg:pb-24" aria-labelledby="reviews-heading">
+      <h2 id="reviews-heading" class="eyebrow">What people say</h2>
+      <ul class="mt-8 grid md:grid-cols-2 gap-x-14 gap-y-12">
+        {reviews.map((r) => (
+          <li class="border-t border-line pt-8">
+            <figure>
+              <blockquote class="text-[18px] leading-[1.7] text-ink whitespace-pre-line">{r.comment}</blockquote>
+              <figcaption class="mt-6 flex items-center gap-4">
+                <ReviewAvatar review={r} />
+                <span class="min-w-0">
+                  <span class="block text-[16px] text-ink">{r.name}</span>
+                  <span class="block text-[14px] text-muted">{[r.role, r.relationship].filter(Boolean).join(' · ')}</span>
+                </span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
   <section class="wrap pb-16 lg:pb-24" aria-label="Referees">
+    {reviews.length > 0 && <h2 class="eyebrow mb-8">Referees</h2>}
     <ul class="border-t border-line">
       {REFEREES.map((r) => (
         <li class="grid md:grid-cols-[220px_1fr] gap-x-10 gap-y-2 py-8 border-b border-line">
@@ -40,12 +74,17 @@ const withQuotes = REFEREES.filter((r) => r.quote);
       ))}
     </ul>
 
-    {withQuotes.length === 0 && (
+    {withQuotes.length === 0 && reviews.length === 0 && (
       <p class="mt-8 max-w-[720px] text-[15px] leading-[1.7] text-muted">
-        Written testimonials from these referees are being collected and will appear here once each
-        one has given permission. In the meantime, I'm happy to arrange a direct conversation.
+        Reviews from the people I've worked with will appear here as they come in. In the meantime,
+        I'm happy to arrange a direct conversation.
       </p>
     )}
+
+    <div class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3">
+      <p class="text-[17px] text-ink">Worked with me, taught me or hired me?</p>
+      <a href="/review" class="link-arrow">leave a review <Icon name="arrow-right" size={14} /></a>
+    </div>
   </section>
 
   <section class="bg-surface">

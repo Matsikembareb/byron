@@ -22,6 +22,10 @@ dist-ssr
 *.sw?
 .env
 
+# Vercel adapter build output, and reviews saved locally by `astro dev` (no Blob token)
+.vercel/
+.reviews-dev/
+
 # Raw screenshots before processing (processed copies go to public/images/projects)
 screenshots-inbox/
 
