@@ -76,6 +76,8 @@ export interface Project {
   beforeAfter?: { without: string[]; with: string[] };
   /** Show the "support this project" band (needs DONATE_URL in src/config.ts). */
   donate?: boolean;
+  /** Show the "star it / contributions welcome" band (needs `repo`). */
+  contribute?: boolean;
   /** One line for the printed CV (src/pages/cv.astro). */
   cvLine?: string;
   blocks: { h: string; body: string }[];
@@ -117,6 +119,8 @@ export const PROJECTS: Project[] = [
       ],
     },
     donate: true,
+    // Byron, 11 Nov 2026: while donations can't pay out to Zimbabwe, ask for stars and contributors.
+    contribute: true,
     cvLine: 'Open-source Flask starter: app factory, blueprints, migrations, logging, tests and Docker, ready to build on.',
     relatedPost: 'flask-vs-django-vs-fastapi',
     blocks: [
