@@ -73,9 +73,13 @@ export interface Project {
   repo?: string;
   /** Button text for `repo`, when it isn't Byron's own ("View the team's code"). */
   repoLabel?: string;
+  /** Button text for `url` (default "Visit live site"). */
+  urlLabel?: string;
   /** Screenshot (1200×750 WebP, plus a -600 copy) shown on tiles and as the case-study hero. */
   image?: string;
   imageAlt?: string;
+  /** CSS object-position for the tile crop (default "left top"). */
+  imagePosition?: string;
   /** Square logo shown on the case-study page and tile. */
   logo?: string;
   /** More screenshots, shown under the write-up. */
@@ -93,6 +97,76 @@ export interface Project {
 }
 
 export const PROJECTS: Project[] = [
+  {
+    slug: 'family-risk',
+    title: 'Family Risk',
+    h1: 'Family Risk: rebuilding family trees to predict hereditary disease',
+    tagline: 'My HIT 400 capstone: hereditary disease risk from medical-aid records',
+    summary:
+      'My HIT 400 capstone. It rebuilds family trees from medical-aid records, scores hereditary risk for heart disease, diabetes and breast cancer, and turns it into screening advice for clinicians.',
+    metaTitle: 'Family Risk: HIT 400 Capstone on Hereditary Disease Risk',
+    metaDescription:
+      'My HIT 400 capstone rebuilds family trees from medical-aid records and scores hereditary risk for heart disease, diabetes and breast cancer. Live demo.',
+    accent: '#2f7d5b',
+    tileKind: 'HIT 400 capstone',
+    tileMeta: 'Flask · React · PostgreSQL · HIT 400 capstone',
+    status: 'Live research prototype',
+    // Byron, 11 Nov 2026: his HIT 400 project (private repo hit400-hereditary-edge-monitor, started 12 Oct 2026).
+    period: 'Oct 2026 – present',
+    featured: true,
+    caseStudy: true,
+    role: 'Developer and researcher, supervised by Mr Brian Mupini',
+    stack: ['Python', 'Flask', 'PostgreSQL', 'React', 'TypeScript', 'Docker'],
+    url: 'https://family-risk.onrender.com',
+    urlLabel: 'Open the live demo',
+    // Screenshots from a local copy loaded with the project's own synthetic families (fictional people).
+    // Designed cover (title + the family tree in a browser window); the raw screens are in the gallery.
+    image: '/images/projects/hit400/cover.webp',
+    imageAlt: 'Family Risk cover: the HIT 400 capstone title beside a browser window showing a patient’s family tree rebuilt from medical-aid records',
+    imagePosition: 'center',
+    gallery: [
+      {
+        src: '/images/projects/hit400/family-tree.webp',
+        alt: 'A fictional patient’s family tree rebuilt from records: parents, siblings and children, relatives with a condition shaded, and an uncertain link drawn dashed for the clinician to check',
+        caption: 'The family tree, rebuilt from medical-aid links. Relatives with a condition are shaded; the dashed line is an uncertain link for the clinician to confirm.',
+      },
+      {
+        src: '/images/projects/hit400/patient.webp',
+        alt: 'A fictional patient’s page: heart attack or stroke risk and type 2 diabetes score, each split into age, things the patient can change and family, beside screening proposals',
+        caption: 'Where a patient’s risk comes from, split into age, things they can change and family, with the screening it leads to.',
+      },
+      {
+        src: '/images/projects/hit400/patients.webp',
+        alt: 'Patients list with each fictional patient’s number of relatives, family risk bands for heart, blood pressure and diabetes, and family links to check',
+        caption: 'The patient list: family risk bands at a glance, and the family links still waiting to be checked.',
+      },
+      {
+        src: '/images/projects/hit400/cohort.webp',
+        alt: 'Cohort chart of family-score bands for breast cancer, heart disease, diabetes and high blood pressure',
+        caption: 'The cohort view for researchers. Groups smaller than five are hidden.',
+      },
+    ],
+    cvLine: 'HIT 400 capstone: rebuilds family trees from medical-aid records and scores hereditary risk for clinicians. Live demo, synthetic data.',
+    relatedPost: 'hit400-family-risk',
+    blocks: [
+      {
+        h: 'The problem',
+        body: 'Family history is one of the strongest signs of who will develop heart disease, diabetes or breast cancer, yet clinics rarely use it between visits. Wearables make it worse: they judge every heartbeat against the same generic limits, whether the wearer is low risk or high risk.',
+      },
+      {
+        h: 'What it does',
+        body: 'Medical-aid records already link families: dependants on a member’s plan, and emergency contacts. Family Risk rebuilds family trees from those links, with a confidence on every link and uncertain ones flagged for the clinician to confirm with the patient. It then scores hereditary risk for heart disease and high blood pressure, type 2 diabetes and breast cancer, using established models such as the WHO 2019 risk chart for southern sub-Saharan Africa, FINDRISC and Claus/Gail, and turns each score into screening advice on a clinician dashboard.',
+      },
+      {
+        h: 'The wearable side',
+        body: 'For heart risk the plan goes further: personalised, digitally signed heart-rate limits sent to a low-cost ESP32 wearable, which checks resting heart rate only when the wearer is still and alerts even offline. The hardware is still on order, so for now a simulator runs the same logic.',
+      },
+      {
+        h: 'How it’s built',
+        body: 'A Flask API (app factory, one blueprint per feature, rules in a separate service layer) over PostgreSQL, and a React and TypeScript dashboard with roles for clinicians, outside reviewers, researchers and admins, plus an audit log of every page opened. Tests run on GitHub Actions, and it is deployed on Render for doctors to try. Sign-in is by invitation, and it holds fictional patients only: it is a research prototype, not a medical device.',
+      },
+    ],
+  },
   {
     slug: 'flask-setup',
     title: 'Flask-Setup',
@@ -114,6 +188,10 @@ export const PROJECTS: Project[] = [
     stack: ['Python', 'Flask', 'Docker'],
     repo: 'https://github.com/Matsikembareb/flask-setup',
     logo: '/images/projects/flask-setup/logo.svg',
+    // Designed cover (11 Nov 2026): the logo plus the project's real folder layout.
+    image: '/images/projects/flask-setup/cover.webp',
+    imageAlt: 'Flask-Setup cover: the flask logo and a code editor showing the project layout, with app, config, db, modules, utils, tests, migrations, a Dockerfile and docker-compose.yml',
+    imagePosition: 'center',
     beforeAfter: {
       without: [
         'Wiring the app factory and config again, by hand',
@@ -603,7 +681,8 @@ export const HOME = {
   /** Above the services: the live systems (LIVE_SYSTEMS), each opening the real site. */
   live: { eyebrow: 'Live systems I’ve worked on' },
   // Byron, 11 Nov 2026: most relevant first; myPowervision moved to More builds on /projects.
-  selected: ['flask-setup', 'pricepick', 'cogniadapt', 'word-evangelism-ministries'],
+  // Byron, 11 Nov 2026: the HIT 400 capstone replaces Word Evangelism, and leads.
+  selected: ['family-risk', 'flask-setup', 'pricepick', 'cogniadapt'],
   // Byron, 10 Nov 2026: the services he offers, plus his goal of starting a company.
   services: {
     eyebrow: 'Services',

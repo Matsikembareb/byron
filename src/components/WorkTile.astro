@@ -25,7 +25,8 @@ const box = 'h-[240px] sm:h-[320px] lg:h-[400px] rounded';
           height="750"
           loading="lazy"
           decoding="async"
-          class="w-full h-full object-cover object-left-top transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          style={`object-position:${p.imagePosition ?? 'left top'}`}
         />
       </div>
     ) : (

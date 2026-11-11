@@ -19,8 +19,8 @@ import {
 import { SITE_URL } from '../config.ts';
 
 const strip = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
-// myPowervision is left out here: it's already the first Powervision bullet.
-const cvProjects = ['flask-setup', 'cogniadapt', 'pricepick']
+// Three projects keep it to one page. myPowervision is already the first Powervision bullet; PricePick is on the site.
+const cvProjects = ['family-risk', 'flask-setup', 'cogniadapt']
   .map((slug) => PROJECTS.find((p) => p.slug === slug))
   .filter((p): p is (typeof PROJECTS)[number] => Boolean(p));
 const skills = SKILLS.filter((s) => s.area !== 'Learning next');
