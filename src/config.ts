@@ -16,8 +16,10 @@ export const WEB3FORMS_ACCESS_KEY = 'dcc9967b-14a2-4777-a8a5-c83a0dc9892d';
 export const CONTACT_FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
 /** Where "Sponsor" buttons point (Flask-Setup's page). Empty hides them.
- *  GitHub Sponsors only takes payments once the profile is set up at github.com/sponsors. */
-export const DONATE_URL = 'https://github.com/sponsors/Matsikembareb';
+ *  Empty for now (11 Nov 2026): GitHub Sponsors doesn't pay out to Zimbabwe (not on its supported
+ *  regions list), so github.com/sponsors/Matsikembareb only redirects to the profile. Put a working
+ *  donation link here to switch the buttons back on. */
+export const DONATE_URL = '';
 
 export const SITE = {
   title: 'Byron Matsikembare – Python Full-Stack Developer, Harare',
