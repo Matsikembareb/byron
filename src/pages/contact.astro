@@ -8,13 +8,13 @@ import { CONTACT_FORM_ENDPOINT, WEB3FORMS_ACCESS_KEY } from '../config.ts';
 /** Last path segment of a profile URL, so displayed text can never drift from the link. */
 const handle = (url: string) => url.replace(/\/$/, '').split('/').pop() ?? url;
 
-// Phone is opt-in via PROFILE.showPhone — publishing it invites spam calls.
+// Phone shows only while PROFILE.showPhone is on.
 const channels = [
   { label: 'Email', value: PROFILE.email, href: PROFILE.social.email },
   { label: 'LinkedIn', value: handle(PROFILE.social.linkedin), href: PROFILE.social.linkedin },
   { label: 'GitHub', value: handle(PROFILE.social.github), href: PROFILE.social.github },
   ...(PROFILE.showPhone
-    ? [{ label: 'Phone / WhatsApp', value: PROFILE.phone, href: `tel:${PROFILE.phone.replace(/\s/g, '')}` }]
+    ? [{ label: 'Phone', value: PROFILE.phone, href: `tel:${PROFILE.phone.replace(/\s/g, '')}` }]
     : []),
   { label: 'Location', value: PROFILE.location, href: null },
 ];

@@ -15,10 +15,10 @@ export const PROFILE = {
   eyebrow: 'Python full-stack developer · HIT Computer Science',
   location: 'Harare, Zimbabwe',
   email: 'matsikembareb@gmail.com',
-  /** Empty on purpose: this file is public on GitHub, so a number here is public even if never
-   *  rendered. Fill in AND set showPhone to true only if you want it on the contact page. */
-  phone: '',
-  showPhone: false,
+  /** Byron, 11 Nov 2026: show it (contact page, footer, CV, schema). International format so it
+   *  dials from abroad; set showPhone to false to hide it everywhere. */
+  phone: '+263 78 081 2222',
+  showPhone: true,
   bio: "I'm an IT systems developer at Die Deutsche Schule Harare, where I built and run DDSops360, the school's operations platform. I work in Flask, Django, FastAPI and React, and I'm studying Computer Science at HIT.",
   /** Cropped from the LinkedIn profile photo, 415x533, EXIF stripped. */
   portrait: '/images/byron-matsikembare-python-developer.webp',
