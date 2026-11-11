@@ -33,10 +33,13 @@ const rows = [
   <section class="wrap pt-14 pb-16 lg:pt-[112px] lg:pb-[88px]">
     <div class="relative lg:pl-[70px]">
       <Icon name="arrow-down" size={22} class="hidden lg:block absolute left-0 top-8 text-muted" />
-      <p class="eyebrow">{HOME.eyebrow}</p>
-      <h1 class="mt-6 lg:mt-9 max-w-[1020px] text-[40px] leading-[1.18] sm:text-[52px] lg:text-[64px] font-normal tracking-[-0.01em] text-ink">
-        {HOME.headline}{' '}
-        <span class="text-accent underline decoration-[3px] underline-offset-[6px] lg:underline-offset-[10px]">{HOME.headlineEmphasis}</span>.
+      <!-- One H1 holding the name and the pitch, so a search for the name lands here first. -->
+      <h1>
+        <span class="eyebrow block">{HOME.eyebrow}</span>
+        <span class="block mt-6 lg:mt-9 max-w-[1020px] text-[40px] leading-[1.18] sm:text-[52px] lg:text-[64px] font-normal tracking-[-0.01em] text-ink">
+          {HOME.headline}{' '}
+          <span class="text-accent underline decoration-[3px] underline-offset-[6px] lg:underline-offset-[10px]">{HOME.headlineEmphasis}</span>.
+        </span>
       </h1>
       <p class="mt-6 max-w-[640px] text-[17px] leading-[1.7] text-muted">{HOME.currentRole}</p>
       <div class="mt-9 flex flex-wrap items-center gap-4">
