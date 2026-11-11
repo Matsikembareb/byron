@@ -2,7 +2,7 @@
 // One-page A4 CV, built from the same data as the site so the two never drift apart.
 // `npm run cv` prints this page to public/cv.pdf, which switches on the homepage's
 // "Download CV" button. Not linked from the site, kept out of the sitemap and noindexed.
-// Privacy: no phone number (the PDF is public). Add it by hand for direct applications.
+// Phone appears only while PROFILE.showPhone is on (the PDF is public).
 import {
   PROFILE,
   EXPERIENCE,
@@ -63,6 +63,7 @@ const shortResult = (r: string) => r.replace(/, including .*$/, '');
         <ul class="contact">
           <li><a href={SITE_URL}>{strip(SITE_URL)}</a></li>
           <li><a href={PROFILE.social.email}>{PROFILE.email}</a></li>
+          {PROFILE.showPhone && PROFILE.phone && <li><a href={`tel:${PROFILE.phone.replace(/\s/g, '')}`}>{PROFILE.phone}</a></li>}
           <li><a href={PROFILE.social.linkedin}>{strip(PROFILE.social.linkedin)}</a></li>
           <li><a href={PROFILE.social.github}>{strip(PROFILE.social.github)}</a></li>
         </ul>

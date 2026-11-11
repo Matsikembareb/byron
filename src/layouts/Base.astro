@@ -42,7 +42,7 @@ const offers = HOME.services.items
   .filter((s) => !['Free sharing', 'Partnerships'].includes(s.h))
   .map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.h, description: s.body } }));
 
-// Phone number deliberately excluded — see PROFILE.showPhone in data.ts.
+// Phone included only while PROFILE.showPhone is on (data.ts).
 const siteSchema = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -55,6 +55,7 @@ const siteSchema = {
       ...(PROFILE.portrait ? { image: new URL(PROFILE.portrait, SITE_URL).href } : {}),
       jobTitle: PROFILE.title,
       email: PROFILE.email,
+      ...(PROFILE.showPhone && PROFILE.phone ? { telephone: PROFILE.phone.replace(/\s/g, '') } : {}),
       description:
         'Python full-stack developer in Harare building websites, custom software and web apps with Flask and React. IT systems developer at Die Deutsche Schule Harare and Computer Science student at HIT.',
       ...(currentJob ? { worksFor: { '@type': 'Organization', name: currentJob.org } } : {}),

@@ -33,6 +33,9 @@ const year = new Date().getFullYear();
         <h2 class="text-[16px] font-medium text-ink">Contact</h2>
         <ul class="mt-4 space-y-3">
           <li><a href={PROFILE.social.email} class="text-[15px] text-muted hover:text-ink transition-colors break-all">{PROFILE.email}</a></li>
+          {PROFILE.showPhone && PROFILE.phone && (
+            <li><a href={`tel:${PROFILE.phone.replace(/\s/g, '')}`} class="text-[15px] text-muted hover:text-ink transition-colors">{PROFILE.phone}</a></li>
+          )}
           <li class="text-[15px] text-muted">{PROFILE.location}</li>
         </ul>
       </div>
