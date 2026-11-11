@@ -15,6 +15,10 @@ export const SITE_URL = 'https://byronmatsikembare.com';
 export const WEB3FORMS_ACCESS_KEY = 'dcc9967b-14a2-4777-a8a5-c83a0dc9892d';
 export const CONTACT_FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
+/** Where "Sponsor" buttons point (Flask-Setup's page). Empty hides them.
+ *  GitHub Sponsors only takes payments once the profile is set up at github.com/sponsors. */
+export const DONATE_URL = 'https://github.com/sponsors/Matsikembareb';
+
 export const SITE = {
   title: 'Byron Matsikembare – Python Full-Stack Developer, Harare',
   shortTitle: 'Byron Matsikembare',

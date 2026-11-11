@@ -210,3 +210,6 @@ h1, h2, h3, h4 { font-weight: 500; }
   :root:not([data-theme='light']) .astro-code span { color: var(--shiki-dark) !important; }
   :root:not([data-theme='light']) .astro-code { background-color: var(--shiki-dark-bg) !important; }
 }
+
+/* Inlined case-study illustrations scale with their box. */
+.illustration svg { display: block; width: 100%; height: auto; }
