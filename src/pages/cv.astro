@@ -13,6 +13,7 @@ import {
   LEADERSHIP,
   REFEREES,
   PEOPLE_SKILLS,
+  LIVE_SYSTEMS,
 } from '../data.ts';
 
 const strip = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
@@ -30,8 +31,14 @@ const certMeta = (c: (typeof CERTIFICATIONS)[number]) => {
   const grade = /graded (\w+)/.exec(c.focus)?.[1];
   return [c.issuer.replace('Matsuo-Iwasawa Lab, ', ''), c.year, grade].filter(Boolean);
 };
-/** The current role gets every bullet; earlier roles their first three. */
-const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : r.bullets.slice(0, 3));
+/** Kept short on purpose: the current role gets three bullets, earlier roles two. */
+const bulletsFor = (r: (typeof EXPERIENCE)[number]) => r.bullets.slice(0, r.current ? 3 : 2);
+/** Live sites done under each role, as bare hosts. */
+const liveFor = (org: string) => LIVE_SYSTEMS.filter((s) => s.org === org);
+/** Tech-relevant certificates only; the full list is on /qualifications. */
+const cvCerts = CERTIFICATIONS.filter((c) => !/Reproductive|Computer Operations|Basic Computer/.test(c.title));
+/** "15 subjects: 8 As and 7 Bs, including …" → "15 subjects: 8 As and 7 Bs". */
+const shortResult = (r: string) => r.replace(/, including .*$/, '');
 ---
 
 <!doctype html>
@@ -71,6 +78,9 @@ const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : 
                   <h3>{r.title} <span>· {org(r.org)}</span></h3>
                   <p class="when">{r.period}</p>
                 </div>
+                {liveFor(r.org).length > 0 && (
+                  <p class="live">Live: {liveFor(r.org).map((s, i) => <>{i > 0 && ' · '}<a href={s.url}>{strip(s.url)}</a></>)}</p>
+                )}
                 <ul class="bullets">
                   {bulletsFor(r).map((b) => <li>{b}</li>)}
                 </ul>
@@ -87,8 +97,8 @@ const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : 
                   {p.period && <p class="when">{p.period}</p>}
                 </div>
                 <p class="text">
-                  {p.summary}
-                  {p.repo && <> <a href={p.repo}>{strip(p.repo)}</a></>}
+                  {p.cvLine ?? p.summary}
+                  {p.repo && <> <a href={p.repo}>{strip(p.repo).replace(/^github\.com\//, 'github/')}</a></>}
                 </p>
               </article>
             ))}
@@ -103,7 +113,7 @@ const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : 
                   <p class="when">{e.dates}</p>
                 </div>
                 <p class="org">{e.institution}</p>
-                {e.result !== 'In progress' && <p class="text">{e.result}</p>}
+                {e.result !== 'In progress' && <p class="text">{shortResult(e.result)}</p>}
               </article>
             ))}
           </section>
@@ -121,7 +131,7 @@ const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : 
           <section>
             <h2>Certifications</h2>
             <ul class="list">
-              {CERTIFICATIONS.map((c) => (
+              {cvCerts.map((c) => (
                 <li><b>{certTitle(c.title)}</b><span>{certMeta(c).map((m, i) => <>{i > 0 && ' · '}<span class="nw">{m}</span></>)}</span></li>
               ))}
               <li><b>Driver's licence, Class 2</b></li>
@@ -220,6 +230,7 @@ const bulletsFor = (r: (typeof EXPERIENCE)[number]) => (r.current ? r.bullets : 
   .bullets li { padding-left: 3.4mm; background: radial-gradient(circle, var(--accent) 0 45%, transparent 52%) no-repeat .2mm .5em / 1.4mm 1.4mm; }
   .bullets li + li { margin-top: .3mm; }
   .text { margin-top: .6mm; }
+  .live { margin-top: .5mm; font-size: 7.6pt; color: var(--muted); }
   .org { color: var(--muted); }
   .nw { white-space: nowrap; }
   .text a { color: var(--accent); white-space: nowrap; }
