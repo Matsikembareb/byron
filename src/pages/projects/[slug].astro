@@ -63,7 +63,7 @@ const schema = {
         <p class="mt-5 text-[18px] leading-[1.65] text-muted">{project.tagline}</p>
         {(project.url || project.repo) && (
           <div class="mt-8 flex flex-wrap gap-3">
-            {project.url && <a href={project.url} target="_blank" rel="noopener noreferrer" class="btn btn-primary">Visit live site <Icon name="arrow-up-right" size={16} /></a>}
+            {project.url && <a href={project.url} target="_blank" rel="noopener noreferrer" class="btn btn-primary">{project.urlLabel ?? 'Visit live site'} <Icon name="arrow-up-right" size={16} /></a>}
             {project.repo && <a href={project.repo} target="_blank" rel="noopener noreferrer" class="btn btn-outline">{project.repoLabel ?? 'View the code'} <Icon name="arrow-up-right" size={16} /></a>}
             {project.donate && DONATE_URL && <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" class="btn btn-outline"><Icon name="heart" size={16} /> Sponsor</a>}
           </div>
