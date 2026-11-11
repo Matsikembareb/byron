@@ -14,6 +14,7 @@ import {
   REFEREES,
   PEOPLE_SKILLS,
   LIVE_SYSTEMS,
+  PHONE,
 } from '../data.ts';
 import { SITE_URL } from '../config.ts';
 
@@ -63,7 +64,9 @@ const shortResult = (r: string) => r.replace(/, including .*$/, '');
         <ul class="contact">
           <li><a href={SITE_URL}>{strip(SITE_URL)}</a></li>
           <li><a href={PROFILE.social.email}>{PROFILE.email}</a></li>
-          {PROFILE.showPhone && PROFILE.phone && <li><a href={`tel:${PROFILE.phone.replace(/\s/g, '')}`}>{PROFILE.phone}</a></li>}
+          {PROFILE.showPhone && PROFILE.phone && (
+            <li><a href={PHONE.tel}>{PROFILE.phone}</a>{PROFILE.whatsapp && <> · <a href={PHONE.whatsapp}>WhatsApp</a></>}</li>
+          )}
           <li><a href={PROFILE.social.linkedin}>{strip(PROFILE.social.linkedin)}</a></li>
           <li><a href={PROFILE.social.github}>{strip(PROFILE.social.github)}</a></li>
         </ul>

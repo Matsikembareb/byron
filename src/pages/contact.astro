@@ -2,19 +2,24 @@
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Icon from '../components/Icon.astro';
-import { PROFILE } from '../data.ts';
+import { PROFILE, PHONE } from '../data.ts';
 import { CONTACT_FORM_ENDPOINT, WEB3FORMS_ACCESS_KEY } from '../config.ts';
 
 /** Last path segment of a profile URL, so displayed text can never drift from the link. */
 const handle = (url: string) => url.replace(/\/$/, '').split('/').pop() ?? url;
 
-// Phone shows only while PROFILE.showPhone is on.
-const channels = [
+// Phone shows only while PROFILE.showPhone is on; the WhatsApp link only while PROFILE.whatsapp is.
+const channels: { label: string; value: string; href: string | null; extra?: { label: string; href: string } }[] = [
   { label: 'Email', value: PROFILE.email, href: PROFILE.social.email },
   { label: 'LinkedIn', value: handle(PROFILE.social.linkedin), href: PROFILE.social.linkedin },
   { label: 'GitHub', value: handle(PROFILE.social.github), href: PROFILE.social.github },
   ...(PROFILE.showPhone
-    ? [{ label: 'Phone', value: PROFILE.phone, href: `tel:${PROFILE.phone.replace(/\s/g, '')}` }]
+    ? [{
+        label: PROFILE.whatsapp ? 'Phone / WhatsApp' : 'Phone',
+        value: PROFILE.phone,
+        href: PHONE.tel,
+        extra: PROFILE.whatsapp ? { label: 'chat on whatsapp', href: PHONE.whatsapp } : undefined,
+      }]
     : []),
   { label: 'Location', value: PROFILE.location, href: null },
 ];
@@ -130,6 +135,9 @@ const fields = [
               {c.href ? (
                 <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel={c.href.startsWith('http') ? 'noopener noreferrer me' : undefined} class="hover:text-accent transition-colors">{c.value}</a>
               ) : c.value}
+              {c.extra && (
+                <a href={c.extra.href} target="_blank" rel="noopener noreferrer" class="link-arrow mt-1.5 flex w-fit">{c.extra.label} <Icon name="arrow-up-right" size={14} /></a>
+              )}
             </dd>
           </div>
         ))}
