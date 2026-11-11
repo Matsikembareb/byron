@@ -6,15 +6,15 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import SectionHead from '../components/SectionHead.astro';
 import WorkTile from '../components/WorkTile.astro';
+import LiveTile from '../components/LiveTile.astro';
 import PostCard from '../components/PostCard.astro';
 import Stats from '../components/Stats.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { SITE } from '../config.ts';
-import { HOME, PROJECTS, EXPERIENCE, LEADERSHIP, REFEREES, yearRange } from '../data.ts';
+import { HOME, PROJECTS, LIVE_SYSTEMS, EXPERIENCE, LEADERSHIP, REFEREES, yearRange } from '../data.ts';
 import { getPublishedPosts } from '../lib/blog.ts';
 
 const bySlug = (slug: string) => PROJECTS.find((p) => p.slug === slug)!;
-const strip = HOME.strip.map(bySlug);
 const selected = HOME.selected.map(bySlug);
 const hasCv = fs.existsSync(path.join(process.cwd(), 'public', HOME.cvPath));
 const posts = (await getPublishedPosts()).slice(0, 3);
@@ -52,21 +52,14 @@ const rows = [
     </div>
   </section>
 
-  <!-- Project tile strip (full width) -->
-  <section aria-label="Projects" class="px-4">
-    <ul class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {strip.map((p) => (
-        <li>
-          <a
-            href={p.caseStudy ? `/projects/${p.slug}` : '/projects'}
-            class:list={['flex flex-col justify-end gap-1 h-[180px] sm:h-[220px] lg:h-[260px] p-5 sm:p-7 rounded transition-[filter] hover:brightness-[1.06]', p.tileDarkText ? 'text-[#111214]' : 'text-white']}
-            style={`background:${p.accent}`}
-          >
-            <span class="text-[20px] sm:text-[24px] font-medium leading-tight">{p.title}</span>
-            <span class="text-[14px] font-light">{p.tileKind}</span>
-          </a>
-        </li>
-      ))}
+  <!-- Live systems strip (full width): each tile opens the real site -->
+  <section aria-labelledby="live-h">
+    <div class="wrap mb-6 flex items-end justify-between gap-6">
+      <h2 id="live-h" class="eyebrow">{HOME.live.eyebrow}</h2>
+      <a href="/projects#live" class="link-arrow">about them <Icon name="arrow-right" size={14} /></a>
+    </div>
+    <ul class="px-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {LIVE_SYSTEMS.map((s) => <li><LiveTile system={s} /></li>)}
     </ul>
   </section>
 

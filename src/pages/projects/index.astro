@@ -4,26 +4,37 @@ import PageHeader from '../../components/PageHeader.astro';
 import WorkTile from '../../components/WorkTile.astro';
 import Icon from '../../components/Icon.astro';
 import CtaBand from '../../components/CtaBand.astro';
-import { PROJECTS, PROFILE } from '../../data.ts';
+import LiveCard from '../../components/LiveCard.astro';
+import { PROJECTS, PROFILE, LIVE_SYSTEMS } from '../../data.ts';
 
-const caseStudies = PROJECTS.filter((p) => p.caseStudy);
-const shortCards = PROJECTS.filter((p) => !p.caseStudy);
+// Live systems first, then the featured case studies as big tiles, then everything else as rows
+// (myPowervision keeps its case study page, linked from its row).
+const caseStudies = PROJECTS.filter((p) => p.caseStudy && p.featured);
+const shortCards = PROJECTS.filter((p) => !(p.caseStudy && p.featured));
 const words = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 const n = (k: number) => words[k] ?? String(k);
 ---
 
 <Base
   metaTitle="Projects – Python & React Portfolio, Byron Matsikembare"
-  description="Case studies of web apps by Byron Matsikembare: myPowervision job scheduling, PricePick deal aggregator, and more Python and React builds."
+  description="Live sites Byron Matsikembare has worked on, from Muzukuru to Chema, plus case studies like Flask-Setup and PricePick and more Python builds."
 >
   <PageHeader
     eyebrow="Work"
     title="Projects: Python and React web apps"
-    subtitle={`A portfolio of Python and Flask projects: ${n(caseStudies.length)} case studies that show how I work, and ${n(shortCards.length)} shorter builds, from a mobile app to a ministry website.`}
+    subtitle={`${n(LIVE_SYSTEMS.length).replace(/^./, (c) => c.toUpperCase())} live systems I've contributed to, ${n(caseStudies.length)} case studies that show how I work, and ${n(shortCards.length)} more builds, from a mobile app to a ministry website.`}
   />
 
-  <section class="wrap pb-16 lg:pb-24" aria-label="Case studies">
-    <div class="grid md:grid-cols-2 gap-x-10 gap-y-14 lg:gap-y-16">
+  <section id="live" class="wrap pb-16 lg:pb-24 scroll-mt-32" aria-labelledby="live-h">
+    <h2 id="live-h" class="eyebrow">Live systems</h2>
+    <div class="mt-6 grid md:grid-cols-2 gap-x-10 gap-y-14">
+      {LIVE_SYSTEMS.map((s) => <LiveCard system={s} />)}
+    </div>
+  </section>
+
+  <section class="wrap pb-16 lg:pb-24" aria-labelledby="case-h">
+    <h2 id="case-h" class="eyebrow">Case studies</h2>
+    <div class="mt-6 grid md:grid-cols-2 gap-x-10 gap-y-14 lg:gap-y-16">
       {caseStudies.map((p) => <WorkTile project={p} />)}
     </div>
   </section>
@@ -38,8 +49,9 @@ const n = (k: number) => words[k] ?? String(k);
           <p class="text-[20px] text-ink">{p.title}</p>
           <div class="col-start-2 md:col-start-auto">
             <p class="text-[15px] text-muted">{p.tagline}</p>
-            {(p.url || p.repo) && (
+            {(p.caseStudy || p.url || p.repo) && (
               <p class="mt-2 flex flex-wrap gap-x-5">
+                {p.caseStudy && <a href={`/projects/${p.slug}`} class="link-arrow">read the case study <Icon name="arrow-right" size={14} /></a>}
                 {p.url && <a href={p.url} target="_blank" rel="noopener noreferrer" class="link-arrow">visit site <Icon name="arrow-up-right" size={14} /></a>}
                 {p.repo && <a href={p.repo} target="_blank" rel="noopener noreferrer" class="link-arrow">view the code <Icon name="arrow-up-right" size={14} /></a>}
               </p>

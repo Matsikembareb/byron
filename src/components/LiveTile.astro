@@ -1,0 +1,35 @@
+---
+// Homepage strip tile: a live system's screenshot, its name on a dark fade, opening the real site.
+import Icon from './Icon.astro';
+import type { LiveSystem } from '../data.ts';
+
+interface Props {
+  system: LiveSystem;
+}
+const { system: s } = Astro.props;
+const host = new URL(s.url).host;
+const src = `/images/live/${s.slug}.webp`;
+---
+
+<a href={s.url} target="_blank" rel="noopener noreferrer" class="group relative block aspect-[16/10] overflow-hidden rounded bg-surface">
+  <img
+    src={src}
+    srcset={`/images/live/${s.slug}-600.webp 600w, ${src} 1200w`}
+    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+    alt={`Home page of ${s.name} (${host})`}
+    width="1200"
+    height="750"
+    loading="lazy"
+    decoding="async"
+    class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+  />
+  <span class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/80 via-black/35 to-transparent" aria-hidden="true"></span>
+  <span class="absolute inset-x-5 bottom-4 sm:inset-x-6 sm:bottom-5 flex items-end justify-between gap-3 text-white">
+    <span class="min-w-0">
+      <span class="block text-[20px] sm:text-[22px] font-medium leading-tight">{s.name}</span>
+      <span class="block mt-1 text-[13px] font-light opacity-90 truncate">{s.kind} · {host}</span>
+    </span>
+    <Icon name="arrow-up-right" size={20} class="shrink-0 mb-0.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+  </span>
+  <span class="sr-only">(opens in a new tab)</span>
+</a>

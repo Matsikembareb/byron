@@ -63,6 +63,19 @@ export interface Project {
   /** TOFILL: live URL or repo. Nothing renders while these are empty. */
   url?: string;
   repo?: string;
+  /** Button text for `repo`, when it isn't Byron's own ("View the team's code"). */
+  repoLabel?: string;
+  /** Screenshot (1200×750 WebP, plus a -600 copy) shown on tiles and as the case-study hero. */
+  image?: string;
+  imageAlt?: string;
+  /** Square logo shown on the case-study page and tile. */
+  logo?: string;
+  /** More screenshots, shown under the write-up. */
+  gallery?: { src: string; alt: string; caption: string }[];
+  /** Illustrated before/after panel (art in src/assets/<slug>/without.svg and with.svg). */
+  beforeAfter?: { without: string[]; with: string[] };
+  /** Show the "support this project" band (needs DONATE_URL in src/config.ts). */
+  donate?: boolean;
   blocks: { h: string; body: string }[];
   relatedPost?: string;
 }
@@ -88,6 +101,20 @@ export const PROJECTS: Project[] = [
     role: 'Sole author and maintainer',
     stack: ['Python', 'Flask', 'Docker'],
     repo: 'https://github.com/Matsikembareb/flask-setup',
+    logo: '/images/projects/flask-setup/logo.svg',
+    beforeAfter: {
+      without: [
+        'Wiring the app factory and config again, by hand',
+        'Untangling circular imports',
+        'Adding migrations, logging and tests later, if ever',
+      ],
+      with: [
+        'App factory, blueprints and config ready from the start',
+        'Migrations, health checks, logging and error handling wired up',
+        'Tests and Docker from the first commit',
+      ],
+    },
+    donate: true,
     relatedPost: 'flask-vs-django-vs-fastapi',
     blocks: [
       {
@@ -120,7 +147,8 @@ export const PROJECTS: Project[] = [
     // Byron, 10 Nov 2026: never deployed. Don't describe it as used by staff.
     status: 'Internship build, not deployed',
     period: 'Sept – Oct 2025',
-    featured: true,
+    // Byron, 11 Nov 2026: a "More builds" row, not a big tile. The case study page stays.
+    featured: false,
     caseStudy: true,
     role: 'Developer, during my IT internship at Powervision',
     stack: ['Python', 'Flask', 'Jinja', 'Bootstrap'],
@@ -162,7 +190,20 @@ export const PROJECTS: Project[] = [
     // Byron, 10 Nov 2026: most of the code was his teammates'. His part was the business side.
     role: 'Team member with Percy and John: business model and plan, documentation, presenting and the demo site',
     stack: ['Python', 'Flask'],
-    // No url/repo: nothing public exists (Byron, 10 Nov 2026).
+    // Byron, 11 Nov 2026: the team's code is on Percy's GitHub. Logo from that repo; screenshots
+    // rendered from its templates with the scraped data it ships with (it isn't deployed).
+    repo: 'https://github.com/PMagombedze/HIT200API',
+    repoLabel: 'View the team’s code',
+    logo: '/images/projects/pricepick/logo.webp',
+    image: '/images/projects/pricepick/home.webp',
+    imageAlt: 'PricePick home page: a product search bar, category links, shop and price filters, and a grid of headphones and other electronics scraped from Zimbabwean online shops',
+    gallery: [
+      {
+        src: '/images/projects/pricepick/sign-in.webp',
+        alt: 'PricePick sign-in form with email and password fields and a Google sign-in button',
+        caption: 'Sign-in, with email and password or a Google account.',
+      },
+    ],
     blocks: [
       {
         h: 'What it is',
@@ -241,12 +282,67 @@ export const PROJECTS: Project[] = [
   },
 ];
 
+// ─── Live systems ────────────────────────────────────────────────────────────
+// Byron, 11 Nov 2026: live sites he contributed to, shown first on the homepage and /projects.
+// Summaries describe each site from its own pages; nothing here claims more than "contributed".
+// Screenshots: public/images/live/<slug>.webp (1200×750) and <slug>-600.webp, taken 11 Nov 2026.
+
+export interface LiveSystem {
+  slug: string;
+  name: string;
+  /** One or two words for the tile. */
+  kind: string;
+  url: string;
+  summary: string;
+  contribution: string;
+}
+
+export const LIVE_SYSTEMS: LiveSystem[] = [
+  {
+    slug: 'deutsche-schule',
+    name: 'Die Deutsche Schule',
+    kind: 'School website',
+    url: 'https://deutscheschule.co.zw',
+    summary:
+      'The school’s public website: German courses and ÖSD exams, plus routes to university, apprenticeships, voluntary service and au-pair placements in Germany.',
+    contribution: 'Contributed as the school’s IT systems developer.',
+  },
+  {
+    slug: 'muzukuru',
+    name: 'Muzukuru',
+    kind: 'Funeral streaming',
+    url: 'https://muzukuru.com',
+    summary:
+      'Funeral and memorial livestreaming, so family who can’t travel can still be present. Streams, venues, pricing and quotes, all online.',
+    contribution: 'Contributed as a developer at Muzukuru Streaming.',
+  },
+  {
+    slug: 'live-streaming-company',
+    name: 'The Live Streaming Company',
+    kind: 'Event livestreaming',
+    url: 'https://livestreaming.co.zw',
+    summary:
+      'Professional livestreaming for conferences, church services and public events across Zimbabwe, to watch live or on demand.',
+    contribution: 'Contributed as a developer.',
+  },
+  {
+    slug: 'chema',
+    name: 'Chema',
+    kind: 'Crowdfunding',
+    url: 'https://chema.co.zw',
+    summary:
+      'Zimbabwe’s community crowdfunding platform, from Muzukuru Streaming: raise money for funerals, medical bills, school fees and community projects.',
+    contribution: 'Contributed as a developer at Muzukuru Streaming.',
+  },
+];
+
 // ─── Home page proof strip ───────────────────────────────────────────────────
 // Defined after PROJECTS so the count is derived, never hand-maintained.
 
 export const PROOF = [
   { k: '21', v: 'A-Level points, 5 subjects' },
-  { k: '1', v: 'Production system, live' },
+  // +1: DDSops360, the school's internal platform, which isn't listed publicly.
+  { k: String(LIVE_SYSTEMS.length + 1), v: 'Live systems I’ve worked on' },
   { k: String(PROJECTS.length), v: 'Projects, web & mobile' },
   { k: '2', v: 'Languages: Shona & English' },
 ];
@@ -460,8 +556,10 @@ export const HOME = {
   availability: 'Open to roles, freelance work & business partners',
   /** Shown only when public/cv.pdf exists. */
   cvPath: '/cv.pdf',
-  strip: ['mypowervision', 'pricepick', 'flask-setup', 'scheduleflow'],
-  selected: ['mypowervision', 'pricepick', 'flask-setup', 'word-evangelism-ministries'],
+  /** Above the services: the live systems (LIVE_SYSTEMS), each opening the real site. */
+  live: { eyebrow: 'Live systems I’ve worked on' },
+  // Byron, 11 Nov 2026: most relevant first; myPowervision moved to More builds on /projects.
+  selected: ['flask-setup', 'pricepick', 'cogniadapt', 'word-evangelism-ministries'],
   // Byron, 10 Nov 2026: the services he offers, plus his goal of starting a company.
   services: {
     eyebrow: 'Services',
