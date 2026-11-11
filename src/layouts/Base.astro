@@ -77,7 +77,10 @@ const siteSchema = {
       '@type': 'WebSite',
       '@id': `${SITE_URL.replace(/\/$/, '')}/#website`,
       url: SITE_URL,
+      // Site name in Google results: "Byron Matsikembare" instead of the bare domain.
       name: SITE.shortTitle,
+      alternateName: ['Byron Matsikembare portfolio', 'byronmatsikembare.com'],
+      inLanguage: SITE.locale,
       publisher: { '@id': personId },
     },
   ],
@@ -97,8 +100,12 @@ const siteSchema = {
     {noindex ? <meta name="robots" content="noindex,nofollow" /> : <meta name="robots" content="index,follow,max-image-preview:large" />}
 
     <!-- Icons -->
+    <!-- Google's results use the favicon: give it an ICO at a multiple of 48px and a PNG as well as the SVG. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1d1e21" media="(prefers-color-scheme: dark)" />
 
