@@ -9,12 +9,16 @@ interface Props {
   title: string;
   height?: number;
   url?: string;
+  /** Show only the top `clip` px, faded out, so a row of embeds lines up. The link below opens the full post. */
+  clip?: number;
 }
-const { embed, title, height = 600, url } = Astro.props;
+const { embed, title, height = 600, url, clip } = Astro.props;
+const clipped = clip !== undefined && clip < height;
 ---
 
 <figure class="w-[320px] max-w-full">
-  <div class="rounded border border-line overflow-hidden bg-bg">
+  <div class="relative rounded border border-line overflow-hidden bg-bg" style={clip !== undefined ? `height:${clip}px` : undefined}>
+    {clipped && <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />}
     <iframe
       src={embed}
       title={`LinkedIn post: ${title}`}

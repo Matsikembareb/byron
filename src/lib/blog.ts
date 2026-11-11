@@ -1,14 +1,23 @@
 // Blog helpers shared by the homepage, /blog, post pages and the RSS feed.
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { isLogo, type LogoName } from './logos.ts';
 
 export type BlogPost = CollectionEntry<'blog'>;
 
-export const CATEGORY_META: Record<BlogPost['data']['category'], { label: string; glyph: string }> = {
-  python: { label: 'Python', glyph: '{ }' },
+export const CATEGORY_META: Record<BlogPost['data']['category'], { label: string; glyph: string; logo?: LogoName }> = {
+  python: { label: 'Python', glyph: '{ }', logo: 'python' },
   'build-log': { label: 'Build log', glyph: '</>' },
   career: { label: 'Career', glyph: '→' },
   community: { label: 'Community', glyph: '“ ”' },
 };
+
+/** Logos for a coverless card: up to 3 from the post's tags, else its category's language logo. */
+export function postLogos(post: BlogPost): LogoName[] {
+  const fromTags = [...new Set(post.data.tags.map((t) => t.toLowerCase()))].filter(isLogo);
+  if (fromTags.length) return fromTags.slice(0, 3);
+  const fallback = CATEGORY_META[post.data.category].logo;
+  return fallback ? [fallback] : [];
+}
 
 /** Published posts, newest first. Drafts never reach a page, the feed or the sitemap. */
 export async function getPublishedPosts(): Promise<BlogPost[]> {
