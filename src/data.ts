@@ -19,6 +19,8 @@ export const PROFILE = {
    *  dials from abroad; set showPhone to false to hide it everywhere. */
   phone: '+263 78 081 2222',
   showPhone: true,
+  /** Byron, 11 Nov 2026: the number takes WhatsApp too, so a WhatsApp link sits next to it. */
+  whatsapp: true,
   bio: "I'm an IT systems developer at Die Deutsche Schule Harare, where I built and run DDSops360, the school's operations platform. I work in Flask, Django, FastAPI and React, and I'm studying Computer Science at HIT.",
   /** Cropped from the LinkedIn profile photo, 415x533, EXIF stripped. */
   portrait: '/images/byron-matsikembare-python-developer.webp',
@@ -29,6 +31,12 @@ export const PROFILE = {
     linkedin: 'https://www.linkedin.com/in/byronmatsikembare',
     email: 'mailto:matsikembareb@gmail.com',
   },
+};
+
+/** Links for PROFILE.phone: tap to call, or open WhatsApp with a greeting that says where they found him. */
+export const PHONE = {
+  tel: `tel:${PROFILE.phone.replace(/\s/g, '')}`,
+  whatsapp: `https://wa.me/${PROFILE.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi Byron, I found you on byronmatsikembare.com.')}`,
 };
 
 // ─── Projects ────────────────────────────────────────────────────────────────
