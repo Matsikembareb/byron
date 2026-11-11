@@ -149,6 +149,21 @@ const schema = {
           </section>
         )}
 
+        {project.contribute && project.repo && (
+          <section class="mt-14 rounded border border-line p-7 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6" aria-labelledby="contribute-h">
+            <div class="max-w-[520px]">
+              <h2 id="contribute-h" class="text-[22px] font-normal text-ink">Find {project.title} useful?</h2>
+              <p class="mt-2 text-[15px] leading-[1.7] text-muted">
+                Star it on GitHub so other Flask developers can find it. Contributions are welcome: open an issue with a bug or an idea, or send a pull request.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3 shrink-0 self-start md:self-auto">
+              <a href={project.repo} target="_blank" rel="noopener noreferrer" class="btn btn-primary"><Icon name="star" size={16} /> Star on GitHub</a>
+              <a href={`${project.repo}/issues`} target="_blank" rel="noopener noreferrer" class="btn btn-outline">Open an issue</a>
+            </div>
+          </section>
+        )}
+
         {project.donate && DONATE_URL && (
           <section class="mt-14 rounded border border-line p-7 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6" aria-labelledby="support-h">
             <div class="max-w-[520px]">
