@@ -15,6 +15,7 @@ import {
   PEOPLE_SKILLS,
   LIVE_SYSTEMS,
 } from '../data.ts';
+import { SITE_URL } from '../config.ts';
 
 const strip = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 // myPowervision is left out here: it's already the first Powervision bullet.
@@ -60,6 +61,7 @@ const shortResult = (r: string) => r.replace(/, including .*$/, '');
           <p class="role">{PROFILE.title} · {PROFILE.location}</p>
         </div>
         <ul class="contact">
+          <li><a href={SITE_URL}>{strip(SITE_URL)}</a></li>
           <li><a href={PROFILE.social.email}>{PROFILE.email}</a></li>
           <li><a href={PROFILE.social.linkedin}>{strip(PROFILE.social.linkedin)}</a></li>
           <li><a href={PROFILE.social.github}>{strip(PROFILE.social.github)}</a></li>
