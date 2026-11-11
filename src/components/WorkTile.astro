@@ -1,6 +1,6 @@
 ---
-// Large "Selected work" tile: colour block with the title inside, caption row below.
-// Swap the colour block for a real screenshot when one exists (add `image` to the project).
+// Large "Selected work" tile: the project's screenshot when it has one, otherwise its colour block
+// (with its logo, if any) and the title inside. Caption row below.
 import Icon from './Icon.astro';
 import type { Project } from '../data.ts';
 
@@ -9,19 +9,37 @@ interface Props {
 }
 const { project: p } = Astro.props;
 const href = p.caseStudy ? `/projects/${p.slug}` : '/projects';
+const box = 'h-[240px] sm:h-[320px] lg:h-[400px] rounded';
 ---
 
 <a href={href} class="group block">
-  <div
-    class="flex items-end h-[240px] sm:h-[320px] lg:h-[400px] p-6 sm:p-8 rounded transition-[filter] group-hover:brightness-[1.06]"
-    style={`background:${p.accent}`}
-  >
-    <h3 class:list={['text-[28px] sm:text-[36px] lg:text-[44px] leading-[1.15] font-medium', p.tileDarkText ? 'text-[#111214]' : 'text-white']}>
-      {p.tileTitle ?? p.title}
-    </h3>
-  </div>
+  {
+    p.image ? (
+      <div class:list={[box, 'overflow-hidden border border-line bg-surface']}>
+        <img
+          src={p.image}
+          srcset={`${p.image.replace(/\.webp$/, '-600.webp')} 600w, ${p.image} 1200w`}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          alt={p.imageAlt ?? ''}
+          width="1200"
+          height="750"
+          loading="lazy"
+          decoding="async"
+          class="w-full h-full object-cover object-left-top transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+        />
+      </div>
+    ) : (
+      <div class:list={[box, 'flex flex-col justify-end gap-5 p-6 sm:p-8 transition-[filter] group-hover:brightness-[1.06]']} style={`background:${p.accent}`}>
+        {p.logo && <img src={p.logo} alt="" width="72" height="72" class="w-14 h-14 sm:w-[72px] sm:h-[72px] rounded-[16px] ring-2 ring-white/25" />}
+        <h3 class:list={['text-[28px] sm:text-[36px] lg:text-[44px] leading-[1.15] font-medium', p.tileDarkText ? 'text-[#111214]' : 'text-white']}>
+          {p.tileTitle ?? p.title}
+        </h3>
+      </div>
+    )
+  }
   <div class="mt-5 flex items-start justify-between gap-6">
     <div>
+      {p.image && <h3 class="text-[14px] tracking-[2px] uppercase text-muted mb-2">{p.tileTitle ?? p.title}</h3>}
       <p class="text-[18px] lg:text-[22px] leading-snug font-normal text-ink">{p.tagline}</p>
       {p.tileMeta && <p class="mt-1.5 text-[14px] text-muted">{p.tileMeta}</p>}
     </div>

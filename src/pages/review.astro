@@ -1,0 +1,238 @@
+---
+// /review: anyone who has worked with Byron can leave a review. It's saved as pending and only
+// appears on /references after he approves it (src/lib/reviews.ts). Noindexed: it's a form, not content.
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Icon from '../components/Icon.astro';
+import { PROFILE } from '../data.ts';
+import { LIMITS, RELATIONSHIPS } from '../lib/reviews.ts';
+---
+
+<Base
+  metaTitle="Leave a review – Byron Matsikembare"
+  description="Worked with Byron Matsikembare, taught him or hired him? Leave a review. Each one is read before it appears on the site."
+  noindex
+>
+  <PageHeader
+    eyebrow="Reviews"
+    title="Leave a review"
+    subtitle="Taught me, supervised me, worked alongside me or hired me? Tell visitors what it was like. I read every review before it goes on the site."
+  />
+
+  <section class="wrap pb-20 lg:pb-32">
+    <!-- Shown by the script, or by the #thanks / #failed redirect when JavaScript is off. -->
+    <div id="thanks" class="notice max-w-[640px] border-t border-line pt-8" role="status" tabindex="-1">
+      <h2 class="text-[24px] font-normal text-ink">Thank you! Your review is in.</h2>
+      <p class="mt-3 text-[17px] leading-[1.7] text-muted">
+        I'll read it and add it to the <a href="/references" class="text-accent underline underline-offset-4">References page</a> shortly.
+        If anything needs changing, just email me and I'll sort it out.
+      </p>
+    </div>
+
+    <form id="review-form" action="/api/reviews" method="POST" enctype="multipart/form-data" class="space-y-6 max-w-[640px]">
+      <p id="failed" class="notice text-[15px] leading-[1.6] text-ink border-l-2 border-accent pl-4" role="alert" tabindex="-1">
+        <span data-error>Sorry, that didn't send.</span> You can also
+        <a href={PROFILE.social.email} class="text-accent underline underline-offset-4">email me your review</a>.
+      </p>
+
+      <div>
+        <label for="name" class="block text-[14px] text-ink mb-2">Name<span class="text-accent" aria-hidden="true"> *</span></label>
+        <input id="name" name="name" type="text" required minlength="2" maxlength={LIMITS.name} autocomplete="name" class="field" />
+      </div>
+
+      <div>
+        <label for="role" class="block text-[14px] text-ink mb-2">Your role and organisation</label>
+        <input id="role" name="role" type="text" maxlength={LIMITS.role} autocomplete="organization-title" placeholder="Job title, organisation" class="field" />
+      </div>
+
+      <div>
+        <label for="relationship" class="block text-[14px] text-ink mb-2">How do you know me?<span class="text-accent" aria-hidden="true"> *</span></label>
+        <select id="relationship" name="relationship" required class="field">
+          <option value="">Choose one…</option>
+          {RELATIONSHIPS.map((r) => <option value={r}>{r}</option>)}
+        </select>
+      </div>
+
+      <div>
+        <label for="comment" class="block text-[14px] text-ink mb-2">Your review<span class="text-accent" aria-hidden="true"> *</span></label>
+        <textarea id="comment" name="comment" rows="6" required minlength={LIMITS.commentMin} maxlength={LIMITS.comment} class="field resize-y" aria-describedby="comment-help"></textarea>
+        <p id="comment-help" class="mt-2 text-[13px] text-muted">
+          A few sentences about something specific we did together works best. <span data-count></span>
+        </p>
+      </div>
+
+      <!-- The photo is resized and cropped in the browser, so this field needs JavaScript. -->
+      <div id="photo-field" hidden>
+        <span class="block text-[14px] text-ink mb-2" id="photo-label">Photo (optional)</span>
+        <div class="flex items-center gap-5">
+          <span class="photo-preview shrink-0 grid place-items-center w-16 h-16 rounded-full bg-surface text-muted overflow-hidden" aria-hidden="true">
+            <img data-preview alt="" class="hidden w-full h-full object-cover" />
+            <svg data-placeholder width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+          </span>
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="btn btn-outline cursor-pointer">
+              <span data-pick>Choose a photo</span>
+              <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only" aria-labelledby="photo-label" />
+            </label>
+            <button type="button" data-remove class="hidden text-[14px] text-muted underline underline-offset-4 hover:text-ink">Remove</button>
+          </div>
+        </div>
+        <p data-photo-error class="hidden mt-2 text-[13px] text-ink">That file couldn't be read as an image. Please try another.</p>
+        <p class="mt-2 text-[13px] text-muted">Shown as a small circle next to your review.</p>
+      </div>
+
+      <div>
+        <label for="email" class="block text-[14px] text-ink mb-2">Email</label>
+        <input id="email" name="email" type="email" maxlength={LIMITS.email} autocomplete="email" class="field" aria-describedby="email-help" />
+        <p id="email-help" class="mt-2 text-[13px] text-muted">Optional, so I can thank you or check a detail. Never shown on the site.</p>
+      </div>
+
+      <label class="flex items-start gap-3 text-[15px] leading-[1.6] text-ink">
+        <input type="checkbox" name="consent" value="yes" required class="mt-1.5 h-4 w-4 shrink-0 accent-[var(--accent)]" />
+        <span>Byron may show my name, role, photo and review on byronmatsikembare.com. I can ask him to remove it at any time.<span class="text-accent" aria-hidden="true"> *</span></span>
+      </label>
+
+      <!-- Honeypot: hidden from people, tempting to bots. -->
+      <div class="hidden" aria-hidden="true">
+        <label for="company">Company</label>
+        <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-5">
+        <button type="submit" class="btn btn-primary">Send review <Icon name="arrow-right" size={16} /></button>
+        <p class="text-[13px] text-muted">Required fields are marked *.</p>
+      </div>
+    </form>
+  </section>
+</Base>
+
+<style>
+  .field {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: 300;
+  }
+  .field::placeholder { color: var(--muted); }
+  .field:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  label:has(> .sr-only:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Thanks / error notes: hidden until targeted by the no-JS redirect or shown by the script. */
+  .notice:not(:target):not(.is-shown) { display: none; }
+  #thanks:target ~ form, #thanks.is-shown ~ form { display: none; }
+</style>
+
+<script>
+  import { CONTACT_FORM_ENDPOINT, SITE_URL, WEB3FORMS_ACCESS_KEY } from '../config.ts';
+
+  const form = document.getElementById('review-form') as HTMLFormElement;
+  const thanks = document.getElementById('thanks')!;
+  const failed = document.getElementById('failed')!;
+  const errorText = failed.querySelector<HTMLElement>('[data-error]')!;
+
+  // Live character count for the review.
+  const comment = form.querySelector<HTMLTextAreaElement>('#comment')!;
+  const count = form.querySelector<HTMLElement>('[data-count]')!;
+  const updateCount = () => (count.textContent = `${comment.value.length} / ${comment.maxLength}`);
+  comment.addEventListener('input', updateCount);
+  updateCount();
+
+  // ── Photo: crop to a square and shrink to 400px in the browser. Re-encoding also strips
+  // the camera's EXIF data (including any GPS location) before anything is uploaded.
+  const photoField = document.getElementById('photo-field')!;
+  const input = photoField.querySelector<HTMLInputElement>('#photo')!;
+  const preview = photoField.querySelector<HTMLImageElement>('[data-preview]')!;
+  const placeholder = photoField.querySelector<SVGElement>('[data-placeholder]')!;
+  const pick = photoField.querySelector<HTMLElement>('[data-pick]')!;
+  const remove = photoField.querySelector<HTMLButtonElement>('[data-remove]')!;
+  const photoError = photoField.querySelector<HTMLElement>('[data-photo-error]')!;
+  let photo: Blob | null = null;
+  let previewUrl = '';
+  photoField.hidden = false;
+
+  async function squarePhoto(file: File, size = 400): Promise<Blob> {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const side = Math.min(bitmap.width, bitmap.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = Math.min(size, side);
+    canvas.getContext('2d')!.drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    const encode = (type: string, quality: number) => new Promise<Blob | null>((done) => canvas.toBlob(done, type, quality));
+    const webp = await encode('image/webp', 0.85);
+    if (webp?.type === 'image/webp') return webp; // Older Safari can't encode WebP and hands back PNG.
+    const jpeg = await encode('image/jpeg', 0.88);
+    if (!jpeg) throw new Error('Could not encode the photo');
+    return jpeg;
+  }
+
+  function showPhoto(blob: Blob | null) {
+    photo = blob;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = blob ? URL.createObjectURL(blob) : '';
+    if (previewUrl) preview.src = previewUrl;
+    else preview.removeAttribute('src');
+    preview.classList.toggle('hidden', !blob);
+    placeholder.classList.toggle('hidden', !!blob);
+    remove.classList.toggle('hidden', !blob);
+    pick.textContent = blob ? 'Change photo' : 'Choose a photo';
+  }
+
+  input.addEventListener('change', async () => {
+    photoError.classList.add('hidden');
+    const file = input.files?.[0];
+    if (!file) return;
+    try {
+      showPhoto(await squarePhoto(file));
+    } catch {
+      showPhoto(null);
+      photoError.classList.remove('hidden');
+    }
+    input.value = '';
+  });
+  remove.addEventListener('click', () => showPhoto(null));
+
+  // ── Send in the background and show the thank-you note in place.
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    button.disabled = true;
+    failed.classList.remove('is-shown');
+    const data = new FormData(form);
+    if (photo) data.set('photo', photo, photo.type === 'image/webp' ? 'photo.webp' : 'photo.jpg');
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || 'Sorry, that didn’t send. Please try again.');
+      notifyByron(data);
+      thanks.classList.add('is-shown');
+      thanks.focus();
+      window.scrollTo({ top: 0 });
+    } catch (err) {
+      errorText.textContent = err instanceof Error && err.message !== 'Failed to fetch' ? err.message : 'Sorry, that didn’t send. Please try again.';
+      failed.classList.add('is-shown');
+      failed.focus();
+      button.disabled = false;
+    }
+  });
+
+  /** Emails Byron that a review is waiting (Web3Forms, like the contact form). Best effort. */
+  function notifyByron(review: FormData) {
+    if (!WEB3FORMS_ACCESS_KEY) return;
+    const field = (k: string) => String(review.get(k) ?? '').trim();
+    const mail = new FormData();
+    mail.set('access_key', WEB3FORMS_ACCESS_KEY);
+    mail.set('subject', `New review from ${field('name')}, waiting for your approval`);
+    mail.set('from_name', 'byron. portfolio');
+    mail.set('name', field('name'));
+    if (field('email')) mail.set('email', field('email'));
+    mail.set('role', field('role') || '(not given)');
+    mail.set('knows you as', field('relationship'));
+    mail.set('photo', photo ? 'yes' : 'no');
+    mail.set('message', `${field('comment')}\n\nApprove or reject it: ${SITE_URL}/admin/reviews`);
+    fetch(CONTACT_FORM_ENDPOINT, { method: 'POST', body: mail, headers: { Accept: 'application/json' }, keepalive: true }).catch(() => {});
+  }
+</script>

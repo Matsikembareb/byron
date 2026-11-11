@@ -1,0 +1,37 @@
+---
+// /projects card for a live system: screenshot, what it is, how Byron contributed, and a link out.
+import Icon from './Icon.astro';
+import type { LiveSystem } from '../data.ts';
+
+interface Props {
+  system: LiveSystem;
+}
+const { system: s } = Astro.props;
+const host = new URL(s.url).host;
+const src = `/images/live/${s.slug}.webp`;
+---
+
+<article class="group relative">
+  <div class="aspect-[16/10] overflow-hidden rounded border border-line bg-surface">
+    <img
+      src={src}
+      srcset={`/images/live/${s.slug}-600.webp 600w, ${src} 1200w`}
+      sizes="(min-width: 768px) 50vw, 100vw"
+      alt={`Home page of ${s.name} (${host})`}
+      width="1200"
+      height="750"
+      loading="lazy"
+      decoding="async"
+      class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+    />
+  </div>
+  <h3 class="mt-5 text-[22px] font-normal text-ink">
+    <a href={s.url} target="_blank" rel="noopener noreferrer" class="after:absolute after:inset-0 group-hover:text-accent transition-colors">
+      {s.name}<span class="sr-only"> (opens in a new tab)</span>
+    </a>
+  </h3>
+  <p class="mt-1 text-[14px] text-muted">{s.kind}</p>
+  <p class="mt-4 text-[16px] leading-[1.7] text-ink">{s.summary}</p>
+  <p class="mt-2 text-[15px] leading-[1.7] text-muted">{s.contribution}</p>
+  <span class="link-arrow mt-4" aria-hidden="true">{host} <Icon name="arrow-up-right" size={14} /></span>
+</article>
