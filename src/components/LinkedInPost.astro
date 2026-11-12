@@ -1,8 +1,8 @@
 ---
-// Official LinkedIn post embed: lazy iframe at a fixed 320px width (heights in data/linkedin.ts are measured at it), accessible title,
-// and a plain link fallback for when the iframe is blocked (privacy extensions, no JS).
+// A LinkedIn post at a fixed 320px width: a picture of the post linking to it (works in every browser, see
+// snapshotFor in data/linkedin.ts), or LinkedIn's own iframe when no picture exists yet. Link below either way.
 import Icon from './Icon.astro';
-import { LINKEDIN_PROFILE } from '../data/linkedin.ts';
+import { LINKEDIN_PROFILE, snapshotFor } from '../data/linkedin.ts';
 
 interface Props {
   embed: string;
@@ -12,26 +12,44 @@ interface Props {
   /** Show only the top `clip` px, faded out, so a row of embeds lines up. The link below opens the full post. */
   clip?: number;
 }
-const { embed, title, height = 600, url, clip } = Astro.props;
+const { embed, title, height: iframeHeight = 600, url, clip } = Astro.props;
+const snapshot = snapshotFor(embed);
+const height = snapshot ? snapshot.height : iframeHeight;
 const clipped = clip !== undefined && clip < height;
+const href = url ?? LINKEDIN_PROFILE;
 ---
 
 <figure class="w-[320px] max-w-full">
   <div class="relative rounded border border-line overflow-hidden bg-bg" style={clip !== undefined ? `height:${clip}px` : undefined}>
     {clipped && <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />}
-    <iframe
-      src={embed}
-      title={`LinkedIn post: ${title}`}
-      width="320"
-      height={height}
-      loading="lazy"
-      class="block w-full"
-      style={`height:${height}px`}
-      allowfullscreen
-    ></iframe>
+    {snapshot ? (
+      <a href={href} target="_blank" rel="noopener noreferrer" class="block transition-opacity hover:opacity-90">
+        <img
+          src={snapshot.src}
+          alt={`LinkedIn post by Byron Matsikembare: ${title}`}
+          width={snapshot.width}
+          height={snapshot.height}
+          loading="lazy"
+          decoding="async"
+          class="block w-full h-auto"
+        />
+        <span class="sr-only">(opens LinkedIn)</span>
+      </a>
+    ) : (
+      <iframe
+        src={embed}
+        title={`LinkedIn post: ${title}`}
+        width="320"
+        height={height}
+        loading="lazy"
+        class="block w-full"
+        style={`height:${height}px`}
+        allowfullscreen
+      ></iframe>
+    )}
   </div>
   <figcaption class="mt-3">
-    <a href={url ?? LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" class="link-arrow">
+    <a href={href} target="_blank" rel="noopener noreferrer" class="link-arrow">
       view on linkedin <Icon name="arrow-up-right" size={14} />
     </a>
   </figcaption>
