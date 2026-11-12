@@ -1,3 +1,5 @@
+import SNAPSHOTS from './linkedin-snapshots.json';
+
 // LinkedIn post embeds (WEBSITE_VISION.md §5, Route A).
 // On LinkedIn: open a post › ⋯ › Embed this post › copy the iframe `src`, then add an entry:
 //   { embed: 'https://www.linkedin.com/embed/feed/update/urn:li:share:XXXX', date: '2026-11-01', title: 'Short label', height: 600 }
@@ -66,3 +68,16 @@ export const LINKEDIN_POSTS: LinkedInEmbed[] = [
 ];
 
 export const LINKEDIN_PROFILE = 'https://www.linkedin.com/in/byronmatsikembare';
+
+/**
+ * Pictures of the embeds, shown instead of LinkedIn's iframe: Edge's tracking prevention (and many privacy
+ * extensions) block linkedin.com frames, which left grey "blocked" boxes. Pictures load from this site in any
+ * browser and link to the post. Files: public/media/linkedin/embeds/<kind>-<id>.webp, 2x pixels for a 320px
+ * slot; sizes in linkedin-snapshots.json. To refresh, re-capture the embed at 320px wide (see that folder).
+ * An embed without a picture falls back to the iframe.
+ */
+export function snapshotFor(embed: string): { src: string; width: number; height: number } | null {
+  const id = embed.match(/urn:li:(\w+):(\d+)/)?.slice(1).join('-');
+  const size = id ? (SNAPSHOTS as Record<string, [number, number]>)[id] : undefined;
+  return id && size ? { src: `/media/linkedin/embeds/${id}.webp`, width: size[0], height: size[1] } : null;
+}
